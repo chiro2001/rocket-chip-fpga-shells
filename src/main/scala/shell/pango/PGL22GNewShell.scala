@@ -205,46 +205,46 @@ class UARTPGL22GShellPlacer(shell: PGL22GShellBasicOverlays, val shellInput: UAR
 //   def place(designInput: SwitchDesignInput) = new SwitchPGL22GPlacedOverlay(shell, valName.name, designInput, shellInput)
 // }
 
-// class ChipLinkPGL22GPlacedOverlay(val shell: PGL22GShellBasicOverlays, name: String, val designInput: ChipLinkDesignInput, val shellInput: ChipLinkShellInput)
-//   extends ChipLinkPangoPlacedOverlay(name, designInput, shellInput, rxPhase= -120, txPhase= -90, rxMargin=0.6, txMargin=0.5)
-// {
-//   val ereset_n = shell { InModuleBody {
-//     val ereset_n = IO(Analog(1.W))
-//     ereset_n.suggestName("ereset_n")
-//     val pin = IOPin(ereset_n, 0)
-//     shell.xdc.addPackagePin(pin, "BC8")
-//     shell.xdc.addIOStandard(pin, "LVCMOS18")
-//     shell.xdc.addTermination(pin, "NONE")
-//     shell.xdc.addPullup(pin)
+class ChipLinkPGL22GPlacedOverlay(val shell: PGL22GShellBasicOverlays, name: String, val designInput: ChipLinkDesignInput, val shellInput: ChipLinkShellInput)
+  extends ChipLinkPangoPlacedOverlay(name, designInput, shellInput, rxPhase= -120, txPhase= -90, rxMargin=0.6, txMargin=0.5)
+{
+  val ereset_n = shell { InModuleBody {
+    val ereset_n = IO(Analog(1.W))
+    ereset_n.suggestName("ereset_n")
+    val pin = IOPin(ereset_n, 0)
+    shell.xdc.addPackagePin(pin, "BC8")
+    shell.xdc.addIOStandard(pin, "LVCMOS18")
+    shell.xdc.addTermination(pin, "NONE")
+    shell.xdc.addPullup(pin)
 
-//     val iobuf = Module(new IOBUF)
-//     iobuf.suggestName("chiplink_ereset_iobuf")
-//     attach(ereset_n, iobuf.io.IO)
-//     iobuf.io.T := true.B // !oe
-//     iobuf.io.I := false.B
+    val iobuf = Module(new IOBUF)
+    iobuf.suggestName("chiplink_ereset_iobuf")
+    attach(ereset_n, iobuf.io.IO)
+    iobuf.io.T := true.B // !oe
+    iobuf.io.I := false.B
 
-//     iobuf.io.O
-//   } }
+    iobuf.io.O
+  } }
 
-//   shell { InModuleBody {
-//     val dir1 = Seq("BC9", "AV8", "AV9", /* clk, rst, send */
-//                    "AY9",  "BA9",  "BF10", "BF9",  "BC11", "BD11", "BD12", "BE12",
-//                    "BF12", "BF11", "BE14", "BF14", "BD13", "BE13", "BC15", "BD15",
-//                    "BE15", "BF15", "BA14", "BB14", "BB13", "BB12", "BA16", "BA15",
-//                    "BC14", "BC13", "AY8",  "AY7",  "AW8",  "AW7",  "BB16", "BC16")
-//     val dir2 = Seq("AV14", "AK13", "AK14", /* clk, rst, send */
-//                    "AR14", "AT14", "AP12", "AR12", "AW12", "AY12", "AW11", "AY10",
-//                    "AU11", "AV11", "AW13", "AY13", "AN16", "AP16", "AP13", "AR13",
-//                    "AT12", "AU12", "AK15", "AL15", "AL14", "AM14", "AV10", "AW10",
-//                    "AN15", "AP15", "AK12", "AL12", "AM13", "AM12", "AJ13", "AJ12")
-//     (IOPin.of(io.b2c) zip dir1) foreach { case (io, pin) => shell.xdc.addPackagePin(io, pin) }
-//     (IOPin.of(io.c2b) zip dir2) foreach { case (io, pin) => shell.xdc.addPackagePin(io, pin) }
-//   } }
-// }
-// class ChipLinkPGL22GShellPlacer(shell: PGL22GShellBasicOverlays, val shellInput: ChipLinkShellInput)(implicit val valName: ValName)
-//   extends ChipLinkShellPlacer[PGL22GShellBasicOverlays] {
-//   def place(designInput: ChipLinkDesignInput) = new ChipLinkPGL22GPlacedOverlay(shell, valName.name, designInput, shellInput)
-// }
+  shell { InModuleBody {
+    val dir1 = Seq("BC9", "AV8", "AV9", /* clk, rst, send */
+                   "AY9",  "BA9",  "BF10", "BF9",  "BC11", "BD11", "BD12", "BE12",
+                   "BF12", "BF11", "BE14", "BF14", "BD13", "BE13", "BC15", "BD15",
+                   "BE15", "BF15", "BA14", "BB14", "BB13", "BB12", "BA16", "BA15",
+                   "BC14", "BC13", "AY8",  "AY7",  "AW8",  "AW7",  "BB16", "BC16")
+    val dir2 = Seq("AV14", "AK13", "AK14", /* clk, rst, send */
+                   "AR14", "AT14", "AP12", "AR12", "AW12", "AY12", "AW11", "AY10",
+                   "AU11", "AV11", "AW13", "AY13", "AN16", "AP16", "AP13", "AR13",
+                   "AT12", "AU12", "AK15", "AL15", "AL14", "AM14", "AV10", "AW10",
+                   "AN15", "AP15", "AK12", "AL12", "AM13", "AM12", "AJ13", "AJ12")
+    (IOPin.of(io.b2c) zip dir1) foreach { case (io, pin) => shell.xdc.addPackagePin(io, pin) }
+    (IOPin.of(io.c2b) zip dir2) foreach { case (io, pin) => shell.xdc.addPackagePin(io, pin) }
+  } }
+}
+class ChipLinkPGL22GShellPlacer(shell: PGL22GShellBasicOverlays, val shellInput: ChipLinkShellInput)(implicit val valName: ValName)
+  extends ChipLinkShellPlacer[PGL22GShellBasicOverlays] {
+  def place(designInput: ChipLinkDesignInput) = new ChipLinkPGL22GPlacedOverlay(shell, valName.name, designInput, shellInput)
+}
 
 // TODO: JTAG is untested
 // class JTAGDebugPGL22GPlacedOverlay(val shell: PGL22GShellBasicOverlays, name: String, val designInput: JTAGDebugDesignInput, val shellInput: JTAGDebugShellInput)
@@ -462,7 +462,7 @@ abstract class PGL22GShellBasicOverlays()(implicit p: Parameters) extends UltraS
   val ddr       = Overlay(DDROverlayKey, new DDRPGL22GShellPlacer(this, DDRShellInput()))
   // val qsfp1     = Overlay(EthernetOverlayKey, new QSFP1PGL22GShellPlacer(this, EthernetShellInput()))
   // val qsfp2     = Overlay(EthernetOverlayKey, new QSFP2PGL22GShellPlacer(this, EthernetShellInput()))
-  // val chiplink  = Overlay(ChipLinkOverlayKey, new ChipLinkPGL22GShellPlacer(this, ChipLinkShellInput()))
+  val chiplink  = Overlay(ChipLinkOverlayKey, new ChipLinkPGL22GShellPlacer(this, ChipLinkShellInput()))
   //val spi_flash = Overlay(SPIFlashOverlayKey, new SPIFlashPGL22GShellPlacer(this, SPIFlashShellInput()))
   //SPI Flash not functional
 }
@@ -525,11 +525,11 @@ class PGL22GShell()(implicit p: Parameters) extends PGL22GShellBasicOverlays
     val powerOnReset: Bool = PowerOnResetFPGAOnly(sysclk)
     sdc.addAsyncPath(Seq(powerOnReset))
 
-    // val ereset: Bool = chiplink.get() match {
-    //   case Some(x: ChipLinkPGL22GPlacedOverlay) => !x.ereset_n
-    //   case _ => false.B
-    // }
-    val ereset: Bool = false.B
+    val ereset: Bool = chiplink.get() match {
+      case Some(x: ChipLinkPGL22GPlacedOverlay) => !x.ereset_n
+      case _ => false.B
+    }
+    // val ereset: Bool = false.B
 
     pllReset := (reset_ibuf.io.O || powerOnReset || ereset)
   }
