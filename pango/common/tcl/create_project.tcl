@@ -28,12 +28,12 @@ if { [file exists $top_sim_file] == 1} {
 
 add_constraint [ glob *.fdc ]
 
-set module_fdc_file ../../scripts/fdc/${top}.fdc
-if { [file exists $module_fdc_file] == 1} {
- puts "Adding fdc file: $top_sim_file!"
- add_constraint $module_fdc_file
-}
-if { [file exists generated.fdc] == 1} {
- puts "Adding fdc file: generated.fdc!"
- add_constraint generated.fdc
-}
+# set module_fdc_file ../../scripts/fdc/${top}.fdc
+# if { [file exists $module_fdc_file] == 1} {
+#  puts "Adding fdc file: $top_sim_file!"
+#  add_constraint $module_fdc_file
+# }
+# if { [file exists generated.fdc] == 1} {
+#  puts "Adding fdc file: generated.fdc!"
+#  add_constraint generated.fdc
+# }
