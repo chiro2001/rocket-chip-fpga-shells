@@ -369,3 +369,14 @@ class sdio_spi_bridge() extends BlackBox
    See the License for the specific language governing permissions and
    limitations under the License.
 */
+
+
+class pll extends BlackBox {
+  val io = new Bundle {
+    val clkin1  = Input(Clock())
+    val clkout0 = Output(Clock())
+    val clkout1 = Output(Clock())
+    val clkout2 = Output(Clock())
+    val pll_lock   = Output(Bool())
+  }
+}

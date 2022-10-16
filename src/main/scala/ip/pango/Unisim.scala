@@ -63,16 +63,16 @@ object IBUFG {
 
 /** IBUF -- Input Buffer */
 
-class IBUF extends BlackBox {
+class GTP_INBUF extends BlackBox {
   val io = IO(new Bundle {
     val O = Output(Bool())
     val I = Input(Bool())
   })
 }
 
-object IBUF {
+object GTP_INBUF {
   def apply(pin: Bool): Bool = {
-    val pad = Module (new IBUF)
+    val pad = Module (new GTP_INBUF)
     pad.io.I := pin
     pad.io.O
   }
@@ -254,7 +254,7 @@ extends BlackBox(
 //val IO = IO(Analog(1.W)) 
 //is illegal
 
-class IOBUF extends BlackBox {
+class GTP_IOBUF extends BlackBox {
 
   val io = new Bundle {
     val O = Output(Bool())
@@ -264,10 +264,10 @@ class IOBUF extends BlackBox {
   }
 }
 
-object IOBUF {
+object GTP_IOBUF {
 
     def apply (pin: Analog, ctrl: BasePin): Bool = {
-      val pad = Module(new IOBUF())
+      val pad = Module(new GTP_IOBUF())
       pad.io.I := ctrl.o.oval
       pad.io.T := ~ctrl.o.oe
       ctrl.i.ival := pad.io.O & ctrl.o.ie
@@ -277,7 +277,7 @@ object IOBUF {
 
   // Creates an output IOBUF
   def apply (pin: Analog, in: Bool): Unit = {
-    val pad = Module(new IOBUF())
+    val pad = Module(new GTP_IOBUF())
     pad.io.I := in
     pad.io.T := false.B
     attach(pad.io.IO, pin)
@@ -285,7 +285,7 @@ object IOBUF {
 
   // Creates an input IOBUF
   def apply (pin: Analog): Bool = {
-    val pad = Module(new IOBUF())
+    val pad = Module(new GTP_IOBUF())
     pad.io.I := false.B
     pad.io.T := true.B
     attach(pad.io.IO, pin)
