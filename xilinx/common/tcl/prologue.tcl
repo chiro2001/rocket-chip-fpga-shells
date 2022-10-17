@@ -29,6 +29,9 @@ while {[llength $argv]} {
     -env-var-srcs {
       set argv [lassign $argv[set argv {}] env_var_srcs]
     }
+    -jvm {
+      set argv [lassign $argv[set argv {}] jvm]
+    }
     default {
       return -code error [list {unknown option} $flag]
     }
