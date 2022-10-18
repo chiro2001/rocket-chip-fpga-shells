@@ -26,10 +26,6 @@ abstract class PGL22GShell(implicit val p: Parameters) extends RawModule {
   val CLK50MHZ = IO(Input(Clock()))
   // negative available
   val ck_rst = IO(Input(Bool()))
-  val resetN = Wire(Reset())
-  val resetP = Wire(Reset())
-  resetN := ck_rst
-  resetP := ~ck_rst
 
   // Green LEDs
   // val led_0        = IO(Analog(1.W))
@@ -157,11 +153,11 @@ abstract class PGL22GShell(implicit val p: Parameters) extends RawModule {
   // reset_periph                     := ip_reset_sys.io.peripheral_reset
   // reset_intcon_n                   := ip_reset_sys.io.interconnect_aresetn
   // reset_periph_n                   := ip_reset_sys.io.peripheral_aresetn
-  reset_core := resetN
-  reset_bus := resetN
-  reset_periph := resetN
-  reset_intcon_n := resetN
-  reset_periph_n := resetN
+  reset_core := ck_rst
+  reset_bus := ck_rst
+  reset_periph := ck_rst
+  reset_intcon_n := ck_rst
+  reset_periph_n := ck_rst
 
   //-----------------------------------------------------------------------
   // SPI Flash
@@ -317,9 +313,9 @@ class NegativeResetWrapper
 (module: => RawModule, ignoredPorts: Seq[String] = Seq("clock", "reset"), moduleName: String = null)
   extends BindableRawModule {
   val clock = IO(Input(Clock()))
-  val resetN = IO(Input(Bool()))
+  val ck_rst = IO(Input(Bool()))
   var gotModuleName: Option[String] = None
-  withClockAndReset(clock, !resetN) {
+  withClockAndReset(clock, !ck_rst) {
     val inner = Module(module)
     gotModuleName = Some(inner.getClass.getName.split("\\.").last + "Wrapper")
     bindingModulePorts(inner, ignoredPorts = ignoredPorts)
