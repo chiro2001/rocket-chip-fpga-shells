@@ -9,10 +9,10 @@ define_attribute {p:clock_clock} {PAP_IO_DIRECTION} {INPUT}
 define_attribute {p:clock_clock} {PAP_IO_LOC} {B5}
 define_attribute {p:clock_clock} {PAP_IO_VCCIO} {3.3}
 define_attribute {p:clock_clock} {PAP_IO_STANDARD} {LVTTL33}
-define_attribute {p:reset} {PAP_IO_DIRECTION} {INPUT}
-define_attribute {p:reset} {PAP_IO_LOC} {U12}
-define_attribute {p:reset} {PAP_IO_VCCIO} {3.3}
-define_attribute {p:reset} {PAP_IO_STANDARD} {LVTTL33}
+define_attribute {p:resetN} {PAP_IO_DIRECTION} {INPUT}
+define_attribute {p:resetN} {PAP_IO_LOC} {U12}
+define_attribute {p:resetN} {PAP_IO_VCCIO} {3.3}
+define_attribute {p:resetN} {PAP_IO_STANDARD} {LVTTL33}
 define_attribute {p:uart_0_rxd} {PAP_IO_DIRECTION} {INPUT}
 define_attribute {p:uart_0_rxd} {PAP_IO_LOC} {U16}
 define_attribute {p:uart_0_rxd} {PAP_IO_VCCIO} {3.3}

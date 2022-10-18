@@ -22,9 +22,11 @@ if { [file exists $top_sim_file] == 1} {
   add_simulation $top_sim_file
 }
 
-# puts "Importing IP cores:"
-# puts [ glob ../scripts/ip/${top}/*.xcix ]
-# import_files -norecurse [ glob ../scripts/ip/${top}/*.xcix ]
+puts "Importing IP cores:"
+puts [ glob *.idf ]
+foreach {f} [ glob *.idf ] {
+  add_design $f
+}
 
 add_constraint [ glob *.fdc ]
 
