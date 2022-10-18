@@ -22,9 +22,9 @@ if { [file exists $top_sim_file] == 1} {
   add_simulation $top_sim_file
 }
 
-puts "Importing IP cores:"
-puts [ glob *.idf ]
-foreach {f} [ glob *.idf ] {
+set ipcores [ glob ipcores/*/*.idf ]
+puts "Importing IP cores: $ipcores"
+foreach {f} $ipcores {
   add_design $f
 }
 
