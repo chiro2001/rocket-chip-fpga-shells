@@ -1,8 +1,8 @@
 source run_synth.tcl
 
 dev_map 
-# pnr 
-pnr -gplace_times 16 -mode fast -parallel 16 
+pnr 
+# pnr -gplace_times 16 -mode fast -parallel 16 
 if {$generate_timng_report != ""} {
   puts "Creating timing report for Synthesis..."
   report_timing
