@@ -28,7 +28,14 @@ foreach {f} $ipcores {
   add_design $f
 }
 
-add_constraint [ glob *.fdc ]
+# set constraints [ glob *.fdc ]
+# foreach {f} $constraints {
+#   add_constraint $f
+# }
+set constraints [ glob ${fpga_dir}/${device_name}/constraints/*.fdc ]
+foreach {f} $constraints {
+  add_constraint $f
+}
 
 # set module_fdc_file ../../scripts/fdc/${top}.fdc
 # if { [file exists $module_fdc_file] == 1} {

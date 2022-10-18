@@ -1,330 +1,372 @@
-package sifive.fpgashells.shell.pangogshell
+package sifive.fpgashells.shell.xilinx
 
 import chisel3._
-import chisel3.experimental.Analog
-import chisel3.{Input, RawModule}
 import freechips.rocketchip.config._
-import freechips.rocketchip.devices.debug._
-import sifive.blocks.devices.pinctrl.BasePin
-import sifive.blocks.devices.spi._
-import sifive.blocks.devices.uart._
-import sifive.fpgashells.ip.pango.{GTP_IOBUF, pll}
+import freechips.rocketchip.diplomacy._
+import freechips.rocketchip.tilelink._
+import freechips.rocketchip.util.SyncResetSynchronizerShiftReg
+import sifive.fpgashells.clocks._
+import sifive.fpgashells.devices.pango.ddr3.{PangoPGL22GMIG, PangoPGL22GMIGPads, PangoPGL22GMIGParams}
+import sifive.fpgashells.shell._
+import sifive.fpgashells.ip.xilinx._
+import sifive.fpgashells.devices.xilinx.xilinxarty100tmig._
+import sifive.fpgashells.shell.pango.{PangoShell, SingleEndedClockInputPangoPlacedOverlay, UARTPangoPlacedOverlay}
 
-// import sifive.fpgashells.ip.xilinx.{IBUFG, IOBUF, PULLUP, mmcm, reset_sys, PowerOnResetFPGAOnly}
+class SysClockPGL22GPlacedOverlay(val shell: PGL22GShellBasicOverlays, name: String, val designInput: ClockInputDesignInput, val shellInput: ClockInputShellInput)
+  extends SingleEndedClockInputPangoPlacedOverlay(name, designInput, shellInput)
+{
+  val node = shell { ClockSourceNode(freqMHz = 100, jitterPS = 50) }
 
-//-------------------------------------------------------------------------
-// PGL22GShell
-//-------------------------------------------------------------------------
+  shell { InModuleBody {
+    val clk: Clock = io
+    shell.xdc.addPackagePin(clk, "E3")
+    shell.xdc.addIOStandard(clk, "LVCMOS33")
+  } }
+}
+class SysClockPGL22GShellPlacer(val shell: PGL22GShellBasicOverlays, val shellInput: ClockInputShellInput)(implicit val valName: ValName)
+  extends ClockInputShellPlacer[PGL22GShellBasicOverlays] {
+  def place(designInput: ClockInputDesignInput) = new SysClockPGL22GPlacedOverlay(shell, valName.name, designInput, shellInput)
+}
 
-abstract class PGL22GShell(implicit val p: Parameters) extends RawModule {
+//PMOD JA used for SDIO
+class SDIOPGL22GPlacedOverlay(val shell: PGL22GShellBasicOverlays, name: String, val designInput: SPIDesignInput, val shellInput: SPIShellInput)
+  extends SDIOPangoPlacedOverlay(name, designInput, shellInput)
+{
+  shell { InModuleBody {
+    val packagePinsWithPackageIOs = Seq(("D12", IOPin(io.spi_clk)),
+      ("B11", IOPin(io.spi_cs)),
+      ("A11", IOPin(io.spi_dat(0))),
+      ("D13", IOPin(io.spi_dat(1))),
+      ("B18", IOPin(io.spi_dat(2))),
+      ("G13", IOPin(io.spi_dat(3))))
 
-  //-----------------------------------------------------------------------
-  // Interface
-  //-----------------------------------------------------------------------
+    packagePinsWithPackageIOs foreach { case (pin, io) => {
+      shell.xdc.addPackagePin(io, pin)
+      shell.xdc.addIOStandard(io, "LVCMOS33")
+      shell.xdc.addIOB(io)
+    } }
+    packagePinsWithPackageIOs drop 1 foreach { case (pin, io) => {
+      shell.xdc.addPullup(io)
+    } }
+  } }
+}
+class SDIOPGL22GShellPlacer(val shell: PGL22GShellBasicOverlays, val shellInput: SPIShellInput)(implicit val valName: ValName)
+  extends SPIShellPlacer[PGL22GShellBasicOverlays] {
+  def place(designInput: SPIDesignInput) = new SDIOPGL22GPlacedOverlay(shell, valName.name, designInput, shellInput)
+}
 
-  // Clock & Reset
-  val CLK50MHZ = IO(Input(Clock()))
-  // negative available
-  val ck_rst = IO(Input(Bool()))
+class SPIFlashPGL22GPlacedOverlay(val shell: PGL22GShellBasicOverlays, name: String, val designInput: SPIFlashDesignInput, val shellInput: SPIFlashShellInput)
+  extends SPIFlashPangoPlacedOverlay(name, designInput, shellInput)
+{
 
-  // Green LEDs
-  // val led_0        = IO(Analog(1.W))
-  // val led_1        = IO(Analog(1.W))
-  // val led_2        = IO(Analog(1.W))
-  // val led_3        = IO(Analog(1.W))
+  shell { InModuleBody {
+    val packagePinsWithPackageIOs = Seq(("L16", IOPin(io.qspi_sck)),
+      ("L13", IOPin(io.qspi_cs)),
+      ("K17", IOPin(io.qspi_dq(0))),
+      ("K18", IOPin(io.qspi_dq(1))),
+      ("L14", IOPin(io.qspi_dq(2))),
+      ("M14", IOPin(io.qspi_dq(3))))
 
-  // RGB LEDs, 3 pins each
-  // val led0_r       = IO(Analog(1.W))
-  // val led0_g       = IO(Analog(1.W))
-  // val led0_b       = IO(Analog(1.W))
-  //
-  // val led1_r       = IO(Analog(1.W))
-  // val led1_g       = IO(Analog(1.W))
-  // val led1_b       = IO(Analog(1.W))
-  //
-  // val led2_r       = IO(Analog(1.W))
-  // val led2_g       = IO(Analog(1.W))
-  // val led2_b       = IO(Analog(1.W))
+    packagePinsWithPackageIOs foreach { case (pin, io) => {
+      shell.xdc.addPackagePin(io, pin)
+      shell.xdc.addIOStandard(io, "LVCMOS33")
+    } }
+    packagePinsWithPackageIOs drop 1 foreach { case (pin, io) => {
+      shell.xdc.addPullup(io)
+    } }
+  } }
+}
+class SPIFlashPGL22GShellPlacer(val shell: PGL22GShellBasicOverlays, val shellInput: SPIFlashShellInput)(implicit val valName: ValName)
+  extends SPIFlashShellPlacer[PGL22GShellBasicOverlays] {
+  def place(designInput: SPIFlashDesignInput) = new SPIFlashPGL22GPlacedOverlay(shell, valName.name, designInput, shellInput)
+}
 
-  // Sliding switches
-  // val sw_0         = IO(Analog(1.W))
-  // val sw_1         = IO(Analog(1.W))
-  // val sw_2         = IO(Analog(1.W))
-  // val sw_3         = IO(Analog(1.W))
+// class TracePMODPGL22GPlacedOverlay(val shell: PGL22GShellBasicOverlays, name: String, val designInput: TracePMODDesignInput, val shellInput: TracePMODShellInput)
+//   extends TracePMODPangoPlacedOverlay(name, designInput, shellInput, packagePins = Seq("U12", "V12", "V10", "V11", "U14", "V14", "T13", "U13"))
+// class TracePMODPGL22GShellPlacer(val shell: PGL22GShellBasicOverlays, val shellInput: TracePMODShellInput)(implicit val valName: ValName)
+//   extends TracePMODShellPlacer[PGL22GShellBasicOverlays] {
+//   def place(designInput: TracePMODDesignInput) = new TracePMODPGL22GPlacedOverlay(shell, valName.name, designInput, shellInput)
+// }
+//
+// class GPIOPMODPGL22GPlacedOverlay(val shell: PGL22GShellBasicOverlays, name: String, val designInput: GPIOPMODDesignInput, val shellInput: GPIOPMODShellInput)
+//   extends GPIOPMODPangoPlacedOverlay(name, designInput, shellInput)
+// {
+//   shell { InModuleBody {
+//     val packagePinsWithPackageIOs = Seq(("E15", IOPin(io.gpio_pmod_0)), //These are PMOD B
+//       ("E16", IOPin(io.gpio_pmod_1)),
+//       ("D15", IOPin(io.gpio_pmod_2)),
+//       ("C15", IOPin(io.gpio_pmod_3)),
+//       ("J17", IOPin(io.gpio_pmod_4)),
+//       ("J18", IOPin(io.gpio_pmod_5)),
+//       ("K15", IOPin(io.gpio_pmod_6)),
+//       ("J15", IOPin(io.gpio_pmod_7)))
+//
+//     packagePinsWithPackageIOs foreach { case (pin, io) => {
+//       shell.xdc.addPackagePin(io, pin)
+//       shell.xdc.addIOStandard(io, "LVCMOS33")
+//     } }
+//     packagePinsWithPackageIOs drop 7 foreach { case (pin, io) => {
+//       shell.xdc.addPullup(io)
+//     } }
+//   } }
+// }
+// class GPIOPMODPGL22GShellPlacer(val shell: PGL22GShellBasicOverlays, val shellInput: GPIOPMODShellInput)(implicit val valName: ValName)
+//   extends GPIOPMODShellPlacer[PGL22GShellBasicOverlays] {
+//   def place(designInput: GPIOPMODDesignInput) = new GPIOPMODPGL22GPlacedOverlay(shell, valName.name, designInput, shellInput)
+// }
 
-  // Buttons. First 3 used as GPIO, the last is used as wakeup
-  // val btn_0        = IO(Analog(1.W))
-  // val btn_1        = IO(Analog(1.W))
-  // val btn_2        = IO(Analog(1.W))
-  // val btn_3        = IO(Analog(1.W))
+class UARTPGL22GPlacedOverlay(val shell: PGL22GShellBasicOverlays, name: String, val designInput: UARTDesignInput, val shellInput: UARTShellInput)
+  extends UARTPangoPlacedOverlay(name, designInput, shellInput, false)
+{
+  shell { InModuleBody {
+    val packagePinsWithPackageIOs = Seq(("A9", IOPin(io.rxd)),
+      ("D10", IOPin(io.txd)))
 
-  // Dedicated QSPI interface
-  // val qspi_cs      = IO(Analog(1.W))
-  // val qspi_sck     = IO(Analog(1.W))
-  // val qspi_dq      = IO(Vec(4, Analog(1.W)))
+    packagePinsWithPackageIOs foreach { case (pin, io) => {
+      shell.xdc.addPackagePin(io, pin)
+      shell.xdc.addIOStandard(io, "LVCMOS33")
+      shell.xdc.addIOB(io)
+    } }
+  } }
+}
+class UARTPGL22GShellPlacer(val shell: PGL22GShellBasicOverlays, val shellInput: UARTShellInput)(implicit val valName: ValName)
+  extends UARTShellPlacer[PGL22GShellBasicOverlays] {
+  def place(designInput: UARTDesignInput) = new UARTPGL22GPlacedOverlay(shell, valName.name, designInput, shellInput)
+}
 
-  // UART0
-  val uart_rxd_out = IO(Analog(1.W))
-  val uart_txd_in = IO(Analog(1.W))
+// //LEDS - r0, g0, b0, r1, g1, b1 ..., 4 normal leds_
+// object LEDPGL22GPinConstraints{
+//   val pins = Seq("G6", "F6", "E1", "G3", "J4", "G4", "J3", "J2", "H4", "K1", "H6", "K2", "H5", "J5", "T9", "T10")
+// }
+// class LEDPGL22GPlacedOverlay(val shell: PGL22GShellBasicOverlays, name: String, val designInput: LEDDesignInput, val shellInput: LEDShellInput)
+//   extends LEDPangoPlacedOverlay(name, designInput, shellInput, packagePin = Some(LEDPGL22GPinConstraints.pins(shellInput.number)))
+// class LEDPGL22GShellPlacer(val shell: PGL22GShellBasicOverlays, val shellInput: LEDShellInput)(implicit val valName: ValName)
+//   extends LEDShellPlacer[PGL22GShellBasicOverlays] {
+//   def place(designInput: LEDDesignInput) = new LEDPGL22GPlacedOverlay(shell, valName.name, designInput, shellInput)
+// }
+//
+// //SWs
+// object SwitchPGL22GPinConstraints{
+//   val pins = Seq("A8", "C11", "C10", "A10")
+// }
+// class SwitchPGL22GPlacedOverlay(val shell: PGL22GShellBasicOverlays, name: String, val designInput: SwitchDesignInput, val shellInput: SwitchShellInput)
+//   extends SwitchPangoPlacedOverlay(name, designInput, shellInput, packagePin = Some(SwitchPGL22GPinConstraints.pins(shellInput.number)))
+// class SwitchPGL22GShellPlacer(val shell: PGL22GShellBasicOverlays, val shellInput: SwitchShellInput)(implicit val valName: ValName)
+//   extends SwitchShellPlacer[PGL22GShellBasicOverlays] {
+//   def place(designInput: SwitchDesignInput) = new SwitchPGL22GPlacedOverlay(shell, valName.name, designInput, shellInput)
+// }
+//
+// //Buttons
+// object ButtonPGL22GPinConstraints {
+//   val pins = Seq("D9", "C9", "B9", "B8")
+// }
+// class ButtonPGL22GPlacedOverlay(val shell: PGL22GShellBasicOverlays, name: String, val designInput: ButtonDesignInput, val shellInput: ButtonShellInput)
+//   extends ButtonPangoPlacedOverlay(name, designInput, shellInput, packagePin = Some(ButtonPGL22GPinConstraints.pins(shellInput.number)))
+// class ButtonPGL22GShellPlacer(val shell: PGL22GShellBasicOverlays, val shellInput: ButtonShellInput)(implicit val valName: ValName)
+//   extends ButtonShellPlacer[PGL22GShellBasicOverlays] {
+//   def place(designInput: ButtonDesignInput) = new ButtonPGL22GPlacedOverlay(shell, valName.name, designInput, shellInput)
+// }
+//
+// class JTAGDebugBScanPGL22GPlacedOverlay(val shell: PGL22GShellBasicOverlays, name: String, val designInput: JTAGDebugBScanDesignInput, val shellInput: JTAGDebugBScanShellInput)
+//   extends JTAGDebugBScanPangoPlacedOverlay(name, designInput, shellInput)
+// class JTAGDebugBScanPGL22GShellPlacer(val shell: PGL22GShellBasicOverlays, val shellInput: JTAGDebugBScanShellInput)(implicit val valName: ValName)
+//   extends JTAGDebugBScanShellPlacer[PGL22GShellBasicOverlays] {
+//   def place(designInput: JTAGDebugBScanDesignInput) = new JTAGDebugBScanPGL22GPlacedOverlay(shell, valName.name, designInput, shellInput)
+// }
 
-  // JA (Used for more generic GPIOs)
-  // val ja_0         = IO(Analog(1.W))
-  // val ja_1         = IO(Analog(1.W))
-  // val ja_2         = IO(Analog(1.W))
-  // val ja_3         = IO(Analog(1.W))
-  // val ja_4         = IO(Analog(1.W))
-  // val ja_5         = IO(Analog(1.W))
-  // val ja_6         = IO(Analog(1.W))
-  // val ja_7         = IO(Analog(1.W))
+// PMOD JD used for JTAG
+class JTAGDebugPGL22GPlacedOverlay(val shell: PGL22GShellBasicOverlays, name: String, val designInput: JTAGDebugDesignInput, val shellInput: JTAGDebugShellInput)
+  extends JTAGDebugPangoPlacedOverlay(name, designInput, shellInput)
+{
+  shell { InModuleBody {
+    shell.sdc.addClock("JTCK", IOPin(io.jtag_TCK), 10)
+    shell.sdc.addGroup(clocks = Seq("JTCK"))
+    shell.xdc.clockDedicatedRouteFalse(IOPin(io.jtag_TCK))
+    val packagePinsWithPackageIOs = Seq(("F4", IOPin(io.jtag_TCK)),  //pin JD-3
+      ("D2", IOPin(io.jtag_TMS)),  //pin JD-8
+      ("E2", IOPin(io.jtag_TDI)),  //pin JD-7
+      ("D4", IOPin(io.jtag_TDO)),  //pin JD-1
+      ("H2", IOPin(io.srst_n)))
 
-  // JC (used for additional debug/trace connection)
-  // val jc           = IO(Vec(8, Analog(1.W)))
+    packagePinsWithPackageIOs foreach { case (pin, io) => {
+      shell.xdc.addPackagePin(io, pin)
+      shell.xdc.addIOStandard(io, "LVCMOS33")
+      shell.xdc.addPullup(io)
+    } }
+  } }
+}
+class JTAGDebugPGL22GShellPlacer(val shell: PGL22GShellBasicOverlays, val shellInput: JTAGDebugShellInput)(implicit val valName: ValName)
+  extends JTAGDebugShellPlacer[PGL22GShellBasicOverlays] {
+  def place(designInput: JTAGDebugDesignInput) = new JTAGDebugPGL22GPlacedOverlay(shell, valName.name, designInput, shellInput)
+}
 
-  // JD (used for JTAG connection)
-  // val jd_0         = IO(Analog(1.W))  // TDO
-  // val jd_1         = IO(Analog(1.W))  // TRST_n
-  // val jd_2         = IO(Analog(1.W))  // TCK
-  // val jd_4         = IO(Analog(1.W))  // TDI
-  // val jd_5         = IO(Analog(1.W))  // TMS
-  // val jd_6         = IO(Analog(1.W))  // SRST_n
+// //cjtag
+// class cJTAGDebugPGL22GPlacedOverlay(val shell: PGL22GShellBasicOverlays, name: String, val designInput: cJTAGDebugDesignInput, val shellInput: cJTAGDebugShellInput)
+//   extends cJTAGDebugPangoPlacedOverlay(name, designInput, shellInput)
+// {
+//   shell { InModuleBody {
+//     shell.sdc.addClock("JTCKC", IOPin(io.cjtag_TCKC), 10)
+//     shell.sdc.addGroup(clocks = Seq("JTCKC"))
+//     shell.xdc.clockDedicatedRouteFalse(IOPin(io.cjtag_TCKC))
+//     val packagePinsWithPackageIOs = Seq(("F4", IOPin(io.cjtag_TCKC)),  //pin JD-3
+//       ("D2", IOPin(io.cjtag_TMSC)),  //pin JD-8
+//       ("H2", IOPin(io.srst_n)))
+//
+//     packagePinsWithPackageIOs foreach { case (pin, io) => {
+//       shell.xdc.addPackagePin(io, pin)
+//       shell.xdc.addIOStandard(io, "LVCMOS33")
+//     } }
+//     shell.xdc.addPullup(IOPin(io.cjtag_TCKC))
+//     shell.xdc.addPullup(IOPin(io.srst_n))
+//   } }
+// }
+// class cJTAGDebugPGL22GShellPlacer(val shell: PGL22GShellBasicOverlays, val shellInput: cJTAGDebugShellInput)(implicit val valName: ValName)
+//   extends cJTAGDebugShellPlacer[PGL22GShellBasicOverlays] {
+//   def place(designInput: cJTAGDebugDesignInput) = new cJTAGDebugPGL22GPlacedOverlay(shell, valName.name, designInput, shellInput)
+// }
 
-  // ChipKit Digital I/O Pins
-  // val ck_io        = IO(Vec(20, Analog(1.W)))
+case object PGL22GDDRSize extends Field[BigInt](0x10000000L / 2) // 128 MB
+class DDRPGL22GPlacedOverlay(val shell: PGL22GShellBasicOverlays, name: String, val designInput: DDRDesignInput, val shellInput: DDRShellInput)
+  extends DDRPlacedOverlay[PangoPGL22GMIGPads](name, designInput, shellInput)
+{
+  val size = p(PGL22GDDRSize)
 
-  // ChipKit SPI
-  // val ck_miso      = IO(Analog(1.W))
-  // val ck_mosi      = IO(Analog(1.W))
-  // val ck_ss        = IO(Analog(1.W))
-  // val ck_sck       = IO(Analog(1.W))
+  val ddrClk1 = shell { ClockSinkNode(freqMHz = 166.666)}
+  val ddrClk2 = shell { ClockSinkNode(freqMHz = 200)}
+  val ddrGroup = shell { ClockGroup() }
+  ddrClk1 := di.wrangler := ddrGroup := di.corePLL
+  ddrClk2 := di.wrangler := ddrGroup
 
-  //-----------------------------------------------------------------------
-  // Wire declrations
-  //-----------------------------------------------------------------------
+  val migParams = PangoPGL22GMIGParams(address = AddressSet.misaligned(di.baseAddress, size))
+  val mig = LazyModule(new PangoPGL22GMIG(migParams))
+  val ioNode = BundleBridgeSource(() => mig.module.io.cloneType)
+  val topIONode = shell { ioNode.makeSink() }
+  val ddrUI     = shell { ClockSourceNode(freqMHz = 100) }
+  val areset    = shell { ClockSinkNode(Seq(ClockSinkParameters())) }
+  areset := di.wrangler := ddrUI
 
-  // Note: these frequencies are approximate.
-  val clock_8MHz = Wire(Clock())
-  val clock_32MHz = Wire(Clock())
-  val clock_65MHz = Wire(Clock())
+  def overlayOutput = DDROverlayOutput(ddr = mig.node)
+  def ioFactory = new PangoPGL22GMIGPads(size)
 
-  val pll_locked = Wire(Bool())
+  InModuleBody { ioNode.bundle <> mig.module.io }
 
-  val reset_core = Wire(Bool())
-  val reset_bus = Wire(Bool())
-  val reset_periph = Wire(Bool())
-  val reset_intcon_n = Wire(Bool())
-  val reset_periph_n = Wire(Bool())
+  shell { InModuleBody {
+    require (shell.sys_clock.get.isDefined, "Use of DDRPGL22GPlacedOverlay depends on SysClockPGL22GPlacedOverlay")
+    val (sys, _) = shell.sys_clock.get.get.overlayOutput.node.out(0)
+    val (ui, _) = ddrUI.out(0)
+    val (dclk1, _) = ddrClk1.in(0)
+    val (dclk2, _) = ddrClk2.in(0)
+    val (ar, _) = areset.in(0)
+    val port = topIONode.bundle.port
 
-  // val SRST_n = Wire(Bool())
+    io <> port
+    ui.clock := port.pll_aclk_0
+    ui.reset := !port.pll_lock || port.ui_clk_sync_rst
+    port.sys_clk_i := dclk1.clock.asUInt
+    port.pll_refclk_in := dclk2.clock.asUInt
+    port.ddrc_rst := shell.pllReset
+    port.ddr_rstn_key := !ar.reset
+  } }
 
-  // val dut_jtag_TCK   = Wire(Clock())
-  // val dut_jtag_TMS   = Wire(Bool())
-  // val dut_jtag_TDI   = Wire(Bool())
-  // val dut_jtag_TDO   = Wire(Bool())
-  // val dut_jtag_reset = Wire(Bool())
-  // val dut_ndreset    = Wire(Bool())
+  shell.sdc.addGroup(clocks = Seq("clk_pll_i"), pins = Seq(mig.island.module.blackbox.io.pll_aclk_0))
+}
+class DDRPGL22GShellPlacer(val shell: PGL22GShellBasicOverlays, val shellInput: DDRShellInput)(implicit val valName: ValName)
+  extends DDRShellPlacer[PGL22GShellBasicOverlays] {
+  def place(designInput: DDRDesignInput) = new DDRPGL22GPlacedOverlay(shell, valName.name, designInput, shellInput)
+}
 
-  //-----------------------------------------------------------------------
-  // Clock Generator
-  //-----------------------------------------------------------------------
-  // Mixed-mode clock generator
+//Core to shell external resets
+class CTSResetPGL22GPlacedOverlay(val shell: PGL22GShellBasicOverlays, name: String, val designInput: CTSResetDesignInput, val shellInput: CTSResetShellInput)
+  extends CTSResetPlacedOverlay(name, designInput, shellInput)
+class CTSResetPGL22GShellPlacer(val shell: PGL22GShellBasicOverlays, val shellInput: CTSResetShellInput)(implicit val valName: ValName)
+  extends CTSResetShellPlacer[PGL22GShellBasicOverlays] {
+  def place(designInput: CTSResetDesignInput) = new CTSResetPGL22GPlacedOverlay(shell, valName.name, designInput, shellInput)
+}
 
-  val ip_pll = Module(new pll())
-  ip_pll.io.clkin1 := CLK50MHZ
-  clock_8MHz := ip_pll.io.clkout0 // 8.388 MHz = 32.768 kHz * 256
-  clock_65MHz := ip_pll.io.clkout2 // 65 Mhz
-  clock_32MHz := ip_pll.io.clkout1 // 65/2 Mhz
-  pll_locked := ip_pll.io.pll_lock
 
-  //-----------------------------------------------------------------------
-  // System Reset
-  //-----------------------------------------------------------------------
-  // processor system reset module
+abstract class PGL22GShellBasicOverlays()(implicit p: Parameters) extends PangoShell {
+  // Order matters; ddr depends on sys_clock
+  val sys_clock = Overlay(ClockInputOverlayKey, new SysClockPGL22GShellPlacer(this, ClockInputShellInput()))
+  val led       = Seq.tabulate(16)(i => Overlay(LEDOverlayKey, new LEDPGL22GShellPlacer(this, LEDMetas(i))(valName = ValName(s"led_$i"))))
+  val switch    = Seq.tabulate(4)(i => Overlay(SwitchOverlayKey, new SwitchPGL22GShellPlacer(this, SwitchShellInput(number = i))(valName = ValName(s"switch_$i"))))
+  val button    = Seq.tabulate(4)(i => Overlay(ButtonOverlayKey, new ButtonPGL22GShellPlacer(this, ButtonShellInput(number = i))(valName = ValName(s"button_$i"))))
+  val ddr       = Overlay(DDROverlayKey, new DDRPGL22GShellPlacer(this, DDRShellInput()))
+  val uart      = Overlay(UARTOverlayKey, new UARTPGL22GShellPlacer(this, UARTShellInput()))
+  val sdio      = Overlay(SPIOverlayKey, new SDIOPGL22GShellPlacer(this, SPIShellInput()))
+  val jtag      = Overlay(JTAGDebugOverlayKey, new JTAGDebugPGL22GShellPlacer(this, JTAGDebugShellInput()))
+  val cjtag     = Overlay(cJTAGDebugOverlayKey, new cJTAGDebugPGL22GShellPlacer(this, cJTAGDebugShellInput()))
+  val spi_flash = Overlay(SPIFlashOverlayKey, new SPIFlashPGL22GShellPlacer(this, SPIFlashShellInput()))
+  val cts_reset = Overlay(CTSResetOverlayKey, new CTSResetPGL22GShellPlacer(this, CTSResetShellInput()))
+  val jtagBScan = Overlay(JTAGDebugBScanOverlayKey, new JTAGDebugBScanPGL22GShellPlacer(this, JTAGDebugBScanShellInput()))
 
-  // val ip_reset_sys = Module(new reset_sys())
+  def LEDMetas(i: Int): LEDShellInput =
+    LEDShellInput(
+      color = if((i < 12) && (i % 3 == 1)) "green" else if((i < 12) && (i % 3 == 2)) "blue" else "red",
+      rgb = (i < 12),
+      number = i)
+}
 
-  // ip_reset_sys.io.slowest_sync_clk := clock_8MHz
-  // ip_reset_sys.io.ext_reset_in     := ck_rst & SRST_n
-  // ip_reset_sys.io.aux_reset_in     := true.B
-  // ip_reset_sys.io.mb_debug_sys_rst := dut_ndreset
-  // ip_reset_sys.io.dcm_locked       := mmcm_locked
-  //
-  // reset_core                       := ip_reset_sys.io.mb_reset
-  // reset_bus                        := ip_reset_sys.io.bus_struct_reset
-  // reset_periph                     := ip_reset_sys.io.peripheral_reset
-  // reset_intcon_n                   := ip_reset_sys.io.interconnect_aresetn
-  // reset_periph_n                   := ip_reset_sys.io.peripheral_aresetn
-  reset_core := ck_rst
-  reset_bus := ck_rst
-  reset_periph := ck_rst
-  reset_intcon_n := ck_rst
-  reset_periph_n := ck_rst
+class PGL22GShell()(implicit p: Parameters) extends PGL22GShellBasicOverlays
+{
+  // PLL reset causes
+  val pllReset = InModuleBody { Wire(Bool()) }
 
-  //-----------------------------------------------------------------------
-  // SPI Flash
-  //-----------------------------------------------------------------------
+  val topDesign = LazyModule(p(DesignKey)(designParameters))
 
-  // def connectSPIFlash(dut: HasPeripherySPIFlashModuleImp): Unit = dut.qspi.headOption.foreach {
-  //   connectSPIFlash(_, dut.clock, dut.reset)
-  // }
-  //
-  // def connectSPIFlash(qspi: SPIPortIO, clock: Clock, reset: Bool): Unit = {
-  //   val qspi_pins = Wire(new SPIPins(() => {new BasePin()}, qspi.c))
-  //
-  //   SPIPinsFromPort(qspi_pins, qspi, clock, reset, syncStages = qspi.c.defaultSampleDel)
-  //
-  //   IOBUF(qspi_sck, qspi.sck)
-  //   IOBUF(qspi_cs,  qspi.cs(0))
-  //
-  //   (qspi_dq zip qspi_pins.dq).foreach { case(a, b) => IOBUF(a, b) }
-  // }
+  // Place the sys_clock at the Shell if the user didn't ask for it
+  p(ClockInputOverlayKey).foreach(_.place(ClockInputDesignInput()))
 
-  //---------------------------------------------------------------------
-  // Debug JTAG
-  //---------------------------------------------------------------------
+  override lazy val module = new LazyRawModuleImp(this) {
+    val reset = IO(Input(Bool()))
+    xdc.addBoardPin(reset, "reset")
 
-  // def connectDebugJTAG(dut: HasPeripheryDebugModuleImp): SystemJTAGIO = {
-  //
-  //   require(dut.debug.isDefined, "Connecting JTAG requires that debug module exists")
-  //   //-------------------------------------------------------------------
-  //   // JTAG Reset
-  //   //-------------------------------------------------------------------
-  //
-  //   val jtag_power_on_reset = PowerOnResetFPGAOnly(clock_32MHz)
-  //
-  //   dut_jtag_reset := jtag_power_on_reset
-  //
-  //   //-------------------------------------------------------------------
-  //   // JTAG IOBUFs
-  //   //-------------------------------------------------------------------
-  //
-  //   dut_jtag_TCK  := IBUFG(IOBUF(jd_2).asClock)
-  //
-  //   dut_jtag_TMS  := IOBUF(jd_5)
-  //   PULLUP(jd_5)
-  //
-  //   dut_jtag_TDI  := IOBUF(jd_4)
-  //   PULLUP(jd_4)
-  //
-  //   IOBUF(jd_0, dut_jtag_TDO)
-  //
-  //   SRST_n := IOBUF(jd_6)
-  //   PULLUP(jd_6)
-  //
-  //   //-------------------------------------------------------------------
-  //   // JTAG PINS
-  //   //-------------------------------------------------------------------
-  //
-  //   val djtag     = dut.debug.get.systemjtag.get
-  //
-  //   djtag.jtag.TCK := dut_jtag_TCK
-  //   djtag.jtag.TMS := dut_jtag_TMS
-  //   djtag.jtag.TDI := dut_jtag_TDI
-  //   dut_jtag_TDO   := djtag.jtag.TDO.data
-  //
-  //   djtag.mfr_id   := p(JtagDTMKey).idcodeManufId.U(11.W)
-  //   djtag.part_number := p(JtagDTMKey).idcodePartNum.U(16.W)
-  //   djtag.version  := p(JtagDTMKey).idcodeVersion.U(4.W)
-  //
-  //   djtag.reset    := dut_jtag_reset
-  //   dut_ndreset    := dut.debug.get.ndreset
-  //
-  //   djtag
-  // }
+    val reset_ibuf = Module(new IBUF)
+    reset_ibuf.io.I := reset
+    val sysclk: Clock = sys_clock.get() match {
+      case Some(x: SysClockPGL22GPlacedOverlay) => x.clock
+    }
+    val powerOnReset = PowerOnResetFPGAOnly(sysclk)
+    sdc.addAsyncPath(Seq(powerOnReset))
 
-  //---------------------------------------------------------------------
-  // UART
-  //---------------------------------------------------------------------
-
-  def connectUART(dut: HasPeripheryUARTModuleImp): Unit = dut.uart.headOption.foreach(connectUART)
-
-  def connectUART(uart: UARTPortIO): Unit = {
-    GTP_IOBUF(uart_rxd_out, uart.txd)
-    uart.rxd := GTP_IOBUF(uart_txd_in)
+    pllReset :=
+      (!reset_ibuf.io.O) || powerOnReset //PGL22G is active low reset
   }
-
 }
 
-trait Bindable {
-  def bindPort(port: Data): Unit
-}
-import chisel3.experimental.DataMirror
-object BindingModulePorts {
-  def bindModulePorts[T <: Bindable]
-  (self: T, source: => RawModule,
-   ignoredPorts: Seq[String] = Seq("clock", "reset"),
-   shouldFlipped: Seq[String] = Seq()) = {
-    DataMirror.modulePorts(source).foreach(item => {
-      println(s"> port ${item}")
-    })
-    DataMirror.modulePorts(source).foreach(item => {
-      if (!ignoredPorts.contains(item._1)) {
-        val port = if (item._1.contains("flipped_")) Flipped(item._2.cloneType) else item._2.cloneType
-        val portName = item._1
-        println(s"port name: $portName")
-        port.suggestName(portName)
-        // bind this port to this module
-        self.bindPort(port)
-        // connect this port to target module
-        try {
-          if (portName.contains("txd")) {
-            port := item._2
-          } else if (portName.contains("rxd")) {
-            item._2 := port
-          } else {
-            try {
-              port <> item._2
-            } catch {
-              case _: Throwable => try {
-                port := item._2
-              } catch {
-                case _: Throwable => {
-                  item._2 := port
-                }
-              }
-            }
-          }
-          // self.bindPort(port)
-        } catch {
-          case e: Exception =>
-            throw e
-        }
-      }
-    })
+class PGL22GShellGPIOPMOD()(implicit p: Parameters) extends PGL22GShellBasicOverlays
+  //This is the Shell used for coreip arty builds, with GPIOS and trace signals on the pmods
+{
+  // PLL reset causes
+  val pllReset = InModuleBody { Wire(Bool()) }
+
+  val gpio_pmod = Overlay(GPIOPMODOverlayKey, new GPIOPMODPGL22GShellPlacer(this, GPIOPMODShellInput()))
+  val trace_pmod = Overlay(TracePMODOverlayKey, new TracePMODPGL22GShellPlacer(this, TracePMODShellInput()))
+
+  val topDesign = LazyModule(p(DesignKey)(designParameters))
+
+  // Place the sys_clock at the Shell if the user didn't ask for it
+  p(ClockInputOverlayKey).foreach(_.place(ClockInputDesignInput()))
+
+  override lazy val module = new LazyRawModuleImp(this) {
+    val reset = IO(Input(Bool()))
+    xdc.addBoardPin(reset, "reset")
+
+    val reset_ibuf = Module(new IBUF)
+    reset_ibuf.io.I := reset
+
+    val sysclk: Clock = sys_clock.get() match {
+      case Some(x: SysClockPGL22GPlacedOverlay) => x.clock
+    }
+    val powerOnReset = PowerOnResetFPGAOnly(sysclk)
+    sdc.addAsyncPath(Seq(powerOnReset))
+    val ctsReset: Bool = cts_reset.get() match {
+      case Some(x: CTSResetPGL22GPlacedOverlay) => x.designInput.rst
+      case None => false.B
+    }
+
+    pllReset :=
+      (!reset_ibuf.io.O) || powerOnReset || ctsReset //PGL22G is active low reset
   }
-}
-
-import BindingModulePorts._
-
-class BindableModule extends Module with Bindable {
-  override def bindPort(port: Data) = _bindIoInPlace(port)
-
-  def bindingModulePorts(source: => RawModule, ignoredPorts: Seq[String] = Seq("clock", "reset")) =
-    bindModulePorts(this, source, ignoredPorts = ignoredPorts)
-}
-
-class BindableRawModule extends RawModule with Bindable{
-  override def bindPort(port: Data) = _bindIoInPlace(port)
-
-  def bindingModulePorts(source: => RawModule, ignoredPorts: Seq[String] = Seq("clock", "reset")) =
-    bindModulePorts(this, source, ignoredPorts = ignoredPorts)
-}
-
-class NegativeResetWrapper
-(module: => RawModule, ignoredPorts: Seq[String] = Seq("clock", "reset"), moduleName: String = null)
-  extends BindableRawModule {
-  val clock = IO(Input(Clock()))
-  val ck_rst = IO(Input(Bool()))
-  var gotModuleName: Option[String] = None
-  withClockAndReset(clock, !ck_rst) {
-    val inner = Module(module)
-    gotModuleName = Some(inner.getClass.getName.split("\\.").last + "Wrapper")
-    bindingModulePorts(inner, ignoredPorts = ignoredPorts)
-  }
-
-  override def desiredName =
-    if (moduleName != null) moduleName
-    else if (gotModuleName.nonEmpty) gotModuleName.get
-    else super.desiredName
 }
 
 /*

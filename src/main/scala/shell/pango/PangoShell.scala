@@ -73,7 +73,7 @@ abstract class PangoShell()(implicit p: Parameters) extends IOShell
 
 abstract class Series7Shell()(implicit p: Parameters) extends PangoShell
 {
-  val pllFactory = new PLLFactory(this, 7, p => Module(new Series7MMCM(p)))
+  val pllFactory = new PLLFactory(this, 7, p => Module(new PangoPLL(p)))
   override def designParameters = super.designParameters.alterPartial {
     case PLLFactoryKey => pllFactory
   }
@@ -81,7 +81,7 @@ abstract class Series7Shell()(implicit p: Parameters) extends PangoShell
 
 abstract class UltraScaleShell()(implicit p: Parameters) extends PangoShell
 {
-  val pllFactory = new PLLFactory(this, 7, p => Module(new Series7MMCM(p)))
+  val pllFactory = new PLLFactory(this, 7, p => Module(new PangoPLL(p)))
   override def designParameters = super.designParameters.alterPartial {
     case PLLFactoryKey => pllFactory
   }

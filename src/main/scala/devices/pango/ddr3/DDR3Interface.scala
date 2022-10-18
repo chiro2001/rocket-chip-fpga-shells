@@ -53,84 +53,90 @@ class PangoPGL22GMIGIsland(c : PangoPGL22GMIGParams)(implicit p: Parameters) ext
     //pins to top level
 
     //inouts
-    attach(io.port.c0_ddr4_dq,blackbox.io.c0_ddr4_dq)
-    attach(io.port.c0_ddr4_dqs_c,blackbox.io.c0_ddr4_dqs_c)
-    attach(io.port.c0_ddr4_dqs_t,blackbox.io.c0_ddr4_dqs_t)
-    attach(io.port.c0_ddr4_dm_dbi_n,blackbox.io.c0_ddr4_dm_dbi_n)
+    attach(io.port.ddr3_dq, blackbox.io.ddr3_dq)
+    attach(io.port.ddr3_dqs_n, blackbox.io.ddr3_dqs_n)
+    attach(io.port.ddr3_dqs_p, blackbox.io.ddr3_dqs_p)
 
     //outputs
-    io.port.c0_ddr4_adr         := blackbox.io.c0_ddr4_adr
-    io.port.c0_ddr4_bg          := blackbox.io.c0_ddr4_bg
-    io.port.c0_ddr4_ba          := blackbox.io.c0_ddr4_ba
-    io.port.c0_ddr4_reset_n     := blackbox.io.c0_ddr4_reset_n
-    io.port.c0_ddr4_act_n       := blackbox.io.c0_ddr4_act_n
-    io.port.c0_ddr4_ck_c        := blackbox.io.c0_ddr4_ck_c
-    io.port.c0_ddr4_ck_t        := blackbox.io.c0_ddr4_ck_t
-    io.port.c0_ddr4_cke         := blackbox.io.c0_ddr4_cke
-    io.port.c0_ddr4_cs_n        := blackbox.io.c0_ddr4_cs_n
-    io.port.c0_ddr4_odt         := blackbox.io.c0_ddr4_odt
+    io.port.ddr3_addr := blackbox.io.ddr3_addr
+    io.port.ddr3_ba := blackbox.io.ddr3_ba
+    io.port.ddr3_ras_n := blackbox.io.ddr3_ras_n
+    io.port.ddr3_cas_n := blackbox.io.ddr3_cas_n
+    io.port.ddr3_we_n := blackbox.io.ddr3_we_n
+    io.port.ddr3_reset_n := blackbox.io.ddr3_reset_n
+    io.port.ddr3_ck_p := blackbox.io.ddr3_ck_p
+    io.port.ddr3_ck_n := blackbox.io.ddr3_ck_n
+    io.port.ddr3_cke := blackbox.io.ddr3_cke
+    io.port.ddr3_cs_n := blackbox.io.ddr3_cs_n
+    io.port.ddr3_dm := blackbox.io.ddr3_dm
+    io.port.ddr3_odt := blackbox.io.ddr3_odt
 
     //inputs
     //NO_BUFFER clock
-    blackbox.io.c0_sys_clk_i    := io.port.c0_sys_clk_i
-
-    io.port.c0_ddr4_ui_clk      := blackbox.io.c0_ddr4_ui_clk
-    io.port.c0_ddr4_ui_clk_sync_rst := blackbox.io.c0_ddr4_ui_clk_sync_rst
-    blackbox.io.c0_ddr4_aresetn := io.port.c0_ddr4_aresetn
+    blackbox.io.pll_refclk_in := io.port.pll_refclk_in
+    blackbox.io.ddr_rstn_key := io.port.ddr_rstn_key
+    blackbox.io.ddrc_rst := io.port.ddrc_rst
+    io.port.ddrphy_rst_done := blackbox.io.ddrphy_rst_done
+    io.port.ddrc_init_done := blackbox.io.ddrc_init_done
+    io.port.pll_aclk_0 := blackbox.io.pll_aclk_0
+    io.port.pll_aclk_1 := blackbox.io.pll_aclk_1
+    io.port.pll_aclk_2 := blackbox.io.pll_aclk_2
+    io.port.pll_pclk := blackbox.io.pll_pclk
+    io.port.pll_lock := blackbox.io.pll_lock
+    // fixme: ignore low power request
+    blackbox.io.cactive_ddrc := true.B
+    io.port.csysack_ddrc := blackbox.io.csysack_ddrc
+    io.port.csysreq_ddrc := blackbox.io.csysreq_ddrc
 
     val awaddr = axi_async.aw.bits.addr - UInt(offset)
     val araddr = axi_async.ar.bits.addr - UInt(offset)
 
     //slave AXI interface write address ports
-    blackbox.io.c0_ddr4_s_axi_awid    := axi_async.aw.bits.id
-    blackbox.io.c0_ddr4_s_axi_awaddr  := awaddr //truncated
-    blackbox.io.c0_ddr4_s_axi_awlen   := axi_async.aw.bits.len
-    blackbox.io.c0_ddr4_s_axi_awsize  := axi_async.aw.bits.size
-    blackbox.io.c0_ddr4_s_axi_awburst := axi_async.aw.bits.burst
-    blackbox.io.c0_ddr4_s_axi_awlock  := axi_async.aw.bits.lock
-    blackbox.io.c0_ddr4_s_axi_awcache := UInt("b0011")
-    blackbox.io.c0_ddr4_s_axi_awprot  := axi_async.aw.bits.prot
-    blackbox.io.c0_ddr4_s_axi_awqos   := axi_async.aw.bits.qos
-    blackbox.io.c0_ddr4_s_axi_awvalid := axi_async.aw.valid
-    axi_async.aw.ready        := blackbox.io.c0_ddr4_s_axi_awready
+    blackbox.io.s_axi_awid := axi_async.aw.bits.id
+    blackbox.io.s_axi_awaddr := awaddr //truncated
+    blackbox.io.s_axi_awlen := axi_async.aw.bits.len
+    blackbox.io.s_axi_awsize := axi_async.aw.bits.size
+    blackbox.io.s_axi_awburst := axi_async.aw.bits.burst
+    blackbox.io.s_axi_awlock := axi_async.aw.bits.lock
+    blackbox.io.s_axi_awcache := UInt("b0011")
+    blackbox.io.s_axi_awprot := axi_async.aw.bits.prot
+    blackbox.io.s_axi_awqos := axi_async.aw.bits.qos
+    blackbox.io.s_axi_awvalid := axi_async.aw.valid
+    axi_async.aw.ready := blackbox.io.s_axi_awready
 
     //slave interface write data ports
-    blackbox.io.c0_ddr4_s_axi_wdata   := axi_async.w.bits.data
-    blackbox.io.c0_ddr4_s_axi_wstrb   := axi_async.w.bits.strb
-    blackbox.io.c0_ddr4_s_axi_wlast   := axi_async.w.bits.last
-    blackbox.io.c0_ddr4_s_axi_wvalid  := axi_async.w.valid
-    axi_async.w.ready         := blackbox.io.c0_ddr4_s_axi_wready
+    blackbox.io.s_axi_wdata := axi_async.w.bits.data
+    blackbox.io.s_axi_wstrb := axi_async.w.bits.strb
+    blackbox.io.s_axi_wlast := axi_async.w.bits.last
+    blackbox.io.s_axi_wvalid := axi_async.w.valid
+    axi_async.w.ready := blackbox.io.s_axi_wready
 
     //slave interface write response
-    blackbox.io.c0_ddr4_s_axi_bready  := axi_async.b.ready
-    axi_async.b.bits.id       := blackbox.io.c0_ddr4_s_axi_bid
-    axi_async.b.bits.resp     := blackbox.io.c0_ddr4_s_axi_bresp
-    axi_async.b.valid         := blackbox.io.c0_ddr4_s_axi_bvalid
+    blackbox.io.s_axi_bready := axi_async.b.ready
+    axi_async.b.bits.id := blackbox.io.s_axi_bid
+    axi_async.b.bits.resp := blackbox.io.s_axi_bresp
+    axi_async.b.valid := blackbox.io.s_axi_bvalid
 
     //slave AXI interface read address ports
-    blackbox.io.c0_ddr4_s_axi_arid    := axi_async.ar.bits.id
-    blackbox.io.c0_ddr4_s_axi_araddr  := araddr // truncated
-    blackbox.io.c0_ddr4_s_axi_arlen   := axi_async.ar.bits.len
-    blackbox.io.c0_ddr4_s_axi_arsize  := axi_async.ar.bits.size
-    blackbox.io.c0_ddr4_s_axi_arburst := axi_async.ar.bits.burst
-    blackbox.io.c0_ddr4_s_axi_arlock  := axi_async.ar.bits.lock
-    blackbox.io.c0_ddr4_s_axi_arcache := UInt("b0011")
-    blackbox.io.c0_ddr4_s_axi_arprot  := axi_async.ar.bits.prot
-    blackbox.io.c0_ddr4_s_axi_arqos   := axi_async.ar.bits.qos
-    blackbox.io.c0_ddr4_s_axi_arvalid := axi_async.ar.valid
-    axi_async.ar.ready        := blackbox.io.c0_ddr4_s_axi_arready
+    blackbox.io.s_axi_arid := axi_async.ar.bits.id
+    blackbox.io.s_axi_araddr := araddr // truncated
+    blackbox.io.s_axi_arlen := axi_async.ar.bits.len
+    blackbox.io.s_axi_arsize := axi_async.ar.bits.size
+    blackbox.io.s_axi_arburst := axi_async.ar.bits.burst
+    blackbox.io.s_axi_arlock := axi_async.ar.bits.lock
+    blackbox.io.s_axi_arcache := UInt("b0011")
+    blackbox.io.s_axi_arprot := axi_async.ar.bits.prot
+    blackbox.io.s_axi_arqos := axi_async.ar.bits.qos
+    blackbox.io.s_axi_arvalid := axi_async.ar.valid
+    axi_async.ar.ready := blackbox.io.s_axi_arready
 
     //slace AXI interface read data ports
-    blackbox.io.c0_ddr4_s_axi_rready  := axi_async.r.ready
-    axi_async.r.bits.id       := blackbox.io.c0_ddr4_s_axi_rid
-    axi_async.r.bits.data     := blackbox.io.c0_ddr4_s_axi_rdata
-    axi_async.r.bits.resp     := blackbox.io.c0_ddr4_s_axi_rresp
-    axi_async.r.bits.last     := blackbox.io.c0_ddr4_s_axi_rlast
-    axi_async.r.valid         := blackbox.io.c0_ddr4_s_axi_rvalid
-
-    //misc
-    io.port.c0_init_calib_complete := blackbox.io.c0_init_calib_complete
-    blackbox.io.sys_rst       :=io.port.sys_rst
+    blackbox.io.s_axi_rready := axi_async.r.ready
+    axi_async.r.bits.id := blackbox.io.s_axi_rid
+    axi_async.r.bits.data := blackbox.io.s_axi_rdata
+    axi_async.r.bits.resp := blackbox.io.s_axi_rresp
+    axi_async.r.bits.last := blackbox.io.s_axi_rlast
+    axi_async.r.valid := blackbox.io.s_axi_rvalid
   }
 }
 
@@ -156,8 +162,9 @@ class PangoPGL22GMIG(c : PangoPGL22GMIGParams)(implicit p: Parameters) extends L
     io.port <> island.module.io.port
 
     // Shove the island
-    island.module.clock := io.port.c0_ddr4_ui_clk
-    island.module.reset := io.port.c0_ddr4_ui_clk_sync_rst
+    // TODO: link MIG clock and reset
+    // island.module.clock := io.port.c0_ddr4_ui_clk
+    // island.module.reset := io.port.c0_ddr4_ui_clk_sync_rst
   }
 }
 

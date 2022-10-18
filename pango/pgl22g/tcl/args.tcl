@@ -1,6 +1,8 @@
 set top %top%
 # set generate_timng_report true
+set generate_timng_report ""
 set long_name %long_name%
+set fpga_dir %fpga_dir%
 
 set project_name $top
 
@@ -15,6 +17,7 @@ set device    PGL22G
 set package   MBG324
 set speed     -6
 set_arch      -family $family -device $device -speedgrade $speed -package $package
+set device_name pgl22g
 
 set jobs 20
 
