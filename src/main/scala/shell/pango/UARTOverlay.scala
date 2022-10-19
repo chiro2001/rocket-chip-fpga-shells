@@ -32,8 +32,10 @@ abstract class UARTPangoPlacedOverlay(name: String, di: UARTDesignInput, si: UAR
 
   shell {
     InModuleBody {
-      tluartSink.bundle.txd := io.txd
-      io.rxd := tluartSink.bundle.rxd
+      tluartSink.bundle.txd <> io.txd
+      io.rxd <> tluartSink.bundle.rxd
+      // UIntToAnalog(tluartSink.bundle.txd, io.txd, true.B)
+      // tluartSink.bundle.rxd := AnalogToUInt(io.rxd)
     }
   }
 }
