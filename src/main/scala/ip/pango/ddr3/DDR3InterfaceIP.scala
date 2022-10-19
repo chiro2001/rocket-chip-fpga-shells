@@ -6,7 +6,7 @@ import freechips.rocketchip.util.{ElaborationArtefacts}
 import freechips.rocketchip.util.GenericParameterizedBundle
 import freechips.rocketchip.config._
 
-// IP VLNV: xilinx.com:customize_ip:hmemc:1.0
+// IP VLNV: xilinx.com:customize_ip:ddr3_core:1.0
 // Black Box
 
 class PGL22GMIGIODDR(depth : BigInt) extends GenericParameterizedBundle(depth) {
@@ -37,7 +37,7 @@ trait PGL22GMIGIOClocksReset extends Bundle {
   val ddr_rstn_key = Bool(INPUT)
   // DDRC 的复位输入
   val ddrc_rst = Bool(INPUT)
-  // HMEMC 内部 PLL lock 信号。
+  // ddr3_core 内部 PLL lock 信号。
   val pll_lock = Bool(OUTPUT)
   // DDRPHY 复位完成标志
   val ddrphy_rst_done = Bool(OUTPUT)
@@ -61,9 +61,9 @@ trait PGL22GMIGIOClocksReset extends Bundle {
 
 //scalastyle:off
 //turn off linter: blackbox name must match verilog module
-class hmemc(depth : BigInt)(implicit val p:Parameters) extends BlackBox
+class ddr3_core(depth : BigInt)(implicit val p:Parameters) extends BlackBox
 {
-  require((depth<=0x80000000L),"hmemc supports upto 2GB depth configuraton")
+  require((depth<=0x80000000L),"ddr3_core supports upto 2GB depth configuraton")
 
   val io = new PGL22GMIGIODDR(depth) with PGL22GMIGIOClocksReset {
     //axi_s
@@ -114,9 +114,9 @@ class hmemc(depth : BigInt)(implicit val p:Parameters) extends BlackBox
   }
 
   ElaborationArtefacts.add(
-    "hmemc.vivado.tcl",
+    "ddr3_core.vivado.tcl",
     """ 
-      create_ip -vendor xilinx.com -library ip -version 2.2 -name ddr4 -module_name hmemc -dir $ipdir -force
+      create_ip -vendor xilinx.com -library ip -version 2.2 -name ddr4 -module_name ddr3_core -dir $ipdir -force
       set_property -dict [list \
       CONFIG.AL_SEL                               {0} \
       CONFIG.C0.ADDR_WIDTH                        {17} \
@@ -191,7 +191,7 @@ class hmemc(depth : BigInt)(implicit val p:Parameters) extends BlackBox
       CONFIG.TIMING_3DS                           {false} \
       CONFIG.TIMING_OP1                           {false} \
       CONFIG.TIMING_OP2                           {false} \
-      ] [get_ips hmemc]"""
+      ] [get_ips ddr3_core]"""
   )
 
 }
