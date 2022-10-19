@@ -1,4 +1,4 @@
-create_clock -name {sys_clock} [get_ports {sys_clock}] -period {20} -waveform {0.000 10.000}
+# create_clock -name {sys_clock} [get_ports {sys_clock}] -period {20} -waveform {0.000 10.000}
 define_attribute {p:sys_clock} {PAP_IO_DIRECTION} {INPUT}
 define_attribute {p:sys_clock} {PAP_IO_LOC} {B5}
 define_attribute {p:sys_clock} {PAP_IO_VCCIO} {3.3}

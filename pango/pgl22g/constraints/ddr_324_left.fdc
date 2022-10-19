@@ -1,11 +1,12 @@
 ###==== BEGIN Clocks
-# create_clock -name {sys_clock} {p:sys_clock} -period {20} -waveform {0 10}
+create_clock -name {sys_clock} {p:sys_clock} -period {20} -waveform {0 10}
+# create_clock -name {sys_clock} [get_ports {sys_clock}] -period {20} -waveform {0.000 10.000}
 ###==== END Clocks
 
 ###==== BEGIN "Generated Clocks"
-create_generated_clock -name {phy_clk} -source {p:sys_clock} {i:mig.island.blackbox.u_pll_50_400.clkout0} -multiply_by 8
-create_generated_clock -name {pclk} -source {p:sys_clock} {i:mig.island.blackbox.u_pll_50_400.clkout1} -multiply_by 1
-create_generated_clock -name {axi_clk0} -source {p:sys_clock} {i:mig.island.blackbox.u_pll_50_400.clkout2} -multiply_by 2
+# create_generated_clock -name {phy_clk} -source {p:sys_clock} {i:mig.island.blackbox.u_pll_50_400.clkout0} -multiply_by 8
+# create_generated_clock -name {pclk} -source {p:sys_clock} {i:mig.island.blackbox.u_pll_50_400.clkout1} -multiply_by 1
+# create_generated_clock -name {axi_clk0} -source {p:sys_clock} {i:mig.island.blackbox.u_pll_50_400.clkout2} -multiply_by 2
 # create_generated_clock -name {axi_clk1} -source {p:sys_clock} {i:mig.island.blackbox.u_pll_50_400.clkout3} -multiply_by 2
 # create_generated_clock -name {axi_clk2} -source {p:sys_clock} {i:mig.island.blackbox.u_pll_50_400.clkout4} -multiply_by 2
 ###==== END "Generated Clocks"

@@ -1,9 +1,32 @@
-// name cc_dir_ext depth 1024 width 120 ports mrw mask_gran 15 
-// name cc_banks_0_ext depth 32768 width 32 ports rw  
-// name data_arrays_0_ext depth 1024 width 32 ports mrw mask_gran 8 
-// name tag_array_ext depth 64 width 22 ports rw  
-// name tag_array_0_ext depth 64 width 21 ports mrw mask_gran 21 
-// name data_arrays_0_0_ext depth 1024 width 32 ports mrw mask_gran 32 
+// name cc_dir_ext depth 256 width 34 ports mrw mask_gran 17 
+// name cc_banks_0_ext depth 4096 width 32 ports rw  
+// name data_arrays_0_ext depth 4096 width 32 ports mrw mask_gran 8 
+// name tag_array_ext depth 256 width 20 ports rw  
+// name tag_array_0_ext depth 256 width 19 ports mrw mask_gran 19 
+// name data_arrays_0_0_ext depth 4096 width 32 ports mrw mask_gran 32 
+
+`define DRM \
+  .wr_data(RW0_wdata),\
+  .wr_addr(RW0_addr),\
+  .wr_en(RW0_wmode & RW0_en & RW0_wmask),\
+  .wr_clk(RW0_clk),\
+  .wr_rst(0),\
+  .rd_addr(RW0_addr),\
+  .rd_data(RW0_rdata),\
+  .rd_clk(rd_clk),\
+  .rd_rst(0)
+
+`define DRMM \
+  .wr_data(RW0_wdata),\
+  .wr_addr(RW0_addr),\
+  .wr_en(RW0_wmode & RW0_en),\
+  .wr_byte_en(RW0_wmask),\
+  .wr_clk(RW0_clk),\
+  .wr_rst(0),\
+  .rd_addr(RW0_addr),\
+  .rd_data(RW0_rdata),\
+  .rd_clk(rd_clk),\
+  .rd_rst(0)
 
 module split_drm_36x128(
   input  [6:0]  RW0_addr,
@@ -14,18 +37,7 @@ module split_drm_36x128(
   input         RW0_wmode,
   input         RW0_wmask
 );
-drm_36x128 inst (
-  .wr_data(RW0_wdata),          // input [7:0]
-  .wr_addr(RW0_addr),          // input [11:0]
-  .wr_en(RW0_wmode & RW0_en),              // input
-  .wr_byte_en(RW0_wmask),    // input
-  .wr_clk(RW0_clk),            // input
-  .wr_rst(0),            // input
-  .rd_addr(RW0_addr),          // input [11:0]
-  .rd_data(RW0_rdata),          // output [7:0]
-  .rd_clk(rd_clk),            // input
-  .rd_rst(0)             // input
-);
+drm_36x128 inst (`DRMM);
 endmodule
 
 module split_drm_8x1024(
@@ -37,18 +49,7 @@ module split_drm_8x1024(
   input         RW0_wmode,
   input         RW0_wmask
 );
-drm_8x1024 drm_8x1024_inst (
-  .wr_data(RW0_wdata),          // input [7:0]
-  .wr_addr(RW0_addr),          // input [11:0]
-  .wr_en(RW0_wmode & RW0_en),              // input
-  .wr_byte_en(RW0_wmask),    // input
-  .wr_clk(RW0_clk),            // input
-  .wr_rst(0),            // input
-  .rd_addr(RW0_addr),          // input [11:0]
-  .rd_data(RW0_rdata),          // output [7:0]
-  .rd_clk(rd_clk),            // input
-  .rd_rst(0)             // input
-);
+drm_8x1024 drm_8x1024_inst (`DRMM);
 endmodule
 
 module split_drm_15x1024(
@@ -92,18 +93,7 @@ module split_drm_8x64(
   input         RW0_wmode,
   input         RW0_wmask
 );
-drm_8x64 drm_data_9k (
-  .wr_data(RW0_wdata),          // input [7:0]
-  .wr_addr(RW0_addr),          // input [11:0]
-  .wr_en(RW0_wmode & RW0_en),              // input
-  .wr_byte_en(RW0_wmask),    // input
-  .wr_clk(RW0_clk),            // input
-  .wr_rst(0),            // input
-  .rd_addr(RW0_addr),          // input [11:0]
-  .rd_data(RW0_rdata),          // output [7:0]
-  .rd_clk(rd_clk),            // input
-  .rd_rst(0)             // input
-);
+drm_8x64 drm_data_9k (`DRMM);
 endmodule
 
 module split_drm_32x1024_nomask(
@@ -115,17 +105,7 @@ module split_drm_32x1024_nomask(
   input           RW0_wmode,
   input           RW0_wmask
 );
-drm_32x1024 inst (
-  .wr_data(RW0_wdata),          // input [7:0]
-  .wr_addr(RW0_addr),          // input [11:0]
-  .wr_en(RW0_wmode & RW0_en & RW0_wmask),              // input
-  .wr_clk(RW0_clk),            // input
-  .wr_rst(0),            // input
-  .rd_addr(RW0_addr),          // input [11:0]
-  .rd_data(RW0_rdata),          // output [7:0]
-  .rd_clk(rd_clk),            // input
-  .rd_rst(0)             // input
-);
+drm_32x1024 inst (`DRM);
 endmodule
 
 module split_drm_32x1024(
@@ -455,3 +435,47 @@ module split_drm_32x64(
   assign mem_0_3_RW0_wmask = RW0_wmask;
 endmodule
 
+module split_drm_17x256(
+  input  [7:0]    RW0_addr,
+  input           RW0_clk,
+  input  [16:0]   RW0_wdata,
+  output [16:0]   RW0_rdata,
+  input           RW0_en,
+  input           RW0_wmode,
+  input           RW0_wmask
+);
+drm_17x256 inst (`DRM);
+endmodule
+module split_drm_32x4096(
+  input  [11:0]   RW0_addr,
+  input           RW0_clk,
+  input  [31:0]   RW0_wdata,
+  output [31:0]   RW0_rdata,
+  input           RW0_en,
+  input           RW0_wmode,
+  input           RW0_wmask
+);
+drm_32x4096 inst (`DRM);
+endmodule
+module split_drm_8x4096(
+  input  [11:0]   RW0_addr,
+  input           RW0_clk,
+  input  [7:0]    RW0_wdata,
+  output [7:0]    RW0_rdata,
+  input           RW0_en,
+  input           RW0_wmode,
+  input           RW0_wmask
+);
+drm_8x4096 inst (`DRM);
+endmodule
+module split_drm_20x256(
+  input  [7:0]    RW0_addr,
+  input           RW0_clk,
+  input  [19:0]   RW0_wdata,
+  output [19:0]   RW0_rdata,
+  input           RW0_en,
+  input           RW0_wmode,
+  input           RW0_wmask
+);
+drm_20x256 inst (`DRM);
+endmodule
