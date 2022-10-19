@@ -1,3 +1,10 @@
+// name cc_dir_ext depth 1024 width 120 ports mrw mask_gran 15 
+// name cc_banks_0_ext depth 32768 width 32 ports rw  
+// name data_arrays_0_ext depth 1024 width 32 ports mrw mask_gran 8 
+// name tag_array_ext depth 64 width 22 ports rw  
+// name tag_array_0_ext depth 64 width 21 ports mrw mask_gran 21 
+// name data_arrays_0_0_ext depth 1024 width 32 ports mrw mask_gran 32 
+
 module data_arrays_0_ext(
   input  [11:0] RW0_addr,
   input         RW0_clk,
