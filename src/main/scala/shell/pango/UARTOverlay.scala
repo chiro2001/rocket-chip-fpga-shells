@@ -6,15 +6,36 @@ import sifive.fpgashells.shell._
 import sifive.fpgashells.ip.pango._
 import sifive.fpgashells.shell.pango.PangoShell
 
+// Tack on cts, rts signals available on some FPGAs. They are currently unused
+// by our designs.
+class ShellPangoUARTPortIO(val flowControl: Boolean) extends Bundle {
+  val txd = Output(Bool())
+  val rxd = Input(Bool())
+}
+
+abstract class UARTBasePlacedOverlay(val name: String, val di: UARTDesignInput, val si: UARTShellInput, val flowControl: Boolean)
+  extends IOPlacedOverlay[ShellPangoUARTPortIO, UARTDesignInput, UARTShellInput, UARTOverlayOutput] {
+  implicit val p = di.p
+
+  def ioFactory = new ShellPangoUARTPortIO(flowControl)
+
+  val tluartSink = sinkScope {
+    di.node.makeSink
+  }
+
+  def overlayOutput = UARTOverlayOutput()
+}
+
 abstract class UARTPangoPlacedOverlay(name: String, di: UARTDesignInput, si: UARTShellInput, flowControl: Boolean)
-  extends UARTPlacedOverlay(name, di, si, flowControl)
-{
+  extends UARTBasePlacedOverlay(name, di, si, flowControl) {
   def shell: PangoShell
 
-  shell { InModuleBody {
-    UIntToAnalog(tluartSink.bundle.txd, io.txd, true.B)
-    tluartSink.bundle.rxd := AnalogToUInt(io.rxd)
-  } }
+  shell {
+    InModuleBody {
+      tluartSink.bundle.txd := io.txd
+      io.rxd := tluartSink.bundle.rxd
+    }
+  }
 }
 
 /*
