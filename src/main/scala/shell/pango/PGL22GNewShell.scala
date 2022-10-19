@@ -325,11 +325,11 @@ abstract class PGL22GShellBasicOverlays()(implicit p: Parameters) extends PangoP
   // val button    = Seq.tabulate(4)(i => Overlay(ButtonOverlayKey, new ButtonPGL22GShellPlacer(this, ButtonShellInput(number = i))(valName = ValName(s"button_$i"))))
   val ddr       = Overlay(DDROverlayKey, new DDRPGL22GShellPlacer(this, DDRShellInput()))
   val uart      = Overlay(UARTOverlayKey, new UARTPGL22GShellPlacer(this, UARTShellInput()))
-  val sdio      = Overlay(SPIOverlayKey, new SDIOPGL22GShellPlacer(this, SPIShellInput()))
-  val jtag      = Overlay(JTAGDebugOverlayKey, new JTAGDebugPGL22GShellPlacer(this, JTAGDebugShellInput()))
+  // val sdio      = Overlay(SPIOverlayKey, new SDIOPGL22GShellPlacer(this, SPIShellInput()))
+  // val jtag      = Overlay(JTAGDebugOverlayKey, new JTAGDebugPGL22GShellPlacer(this, JTAGDebugShellInput()))
   // val cjtag     = Overlay(cJTAGDebugOverlayKey, new cJTAGDebugPGL22GShellPlacer(this, cJTAGDebugShellInput()))
-  val spi_flash = Overlay(SPIFlashOverlayKey, new SPIFlashPGL22GShellPlacer(this, SPIFlashShellInput()))
-  val cts_reset = Overlay(CTSResetOverlayKey, new CTSResetPGL22GShellPlacer(this, CTSResetShellInput()))
+  // val spi_flash = Overlay(SPIFlashOverlayKey, new SPIFlashPGL22GShellPlacer(this, SPIFlashShellInput()))
+  // val cts_reset = Overlay(CTSResetOverlayKey, new CTSResetPGL22GShellPlacer(this, CTSResetShellInput()))
   // val jtagBScan = Overlay(JTAGDebugBScanOverlayKey, new JTAGDebugBScanPGL22GShellPlacer(this, JTAGDebugBScanShellInput()))
   val chiplink  = Overlay(ChipLinkOverlayKey, new ChipLinkPGL22GShellPlacer(this, ChipLinkShellInput()))
 
@@ -393,13 +393,14 @@ class PGL22GShellGPIOPMOD()(implicit p: Parameters) extends PGL22GShellBasicOver
     }
     val powerOnReset = PowerOnResetFPGAOnly(sysclk)
     sdc.addAsyncPath(Seq(powerOnReset))
-    val ctsReset: Bool = cts_reset.get() match {
-      case Some(x: CTSResetPGL22GPlacedOverlay) => x.designInput.rst
-      case None => false.B
-    }
+    // val ctsReset: Bool = cts_reset.get() match {
+    //   case Some(x: CTSResetPGL22GPlacedOverlay) => x.designInput.rst
+    //   case None => false.B
+    // }
 
     pllReset :=
-      (!reset_ibuf.io.O) || powerOnReset || ctsReset //PGL22G is active low reset
+      (!reset_ibuf.io.O) || powerOnReset
+    // || ctsReset //PGL22G is active low reset
   }
 }
 
