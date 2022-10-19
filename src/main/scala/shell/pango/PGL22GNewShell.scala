@@ -1,15 +1,16 @@
-package sifive.fpgashells.shell.xilinx
+package sifive.fpgashells.shell.pango
 
 import chisel3._
+import chisel3.experimental.{Analog, IO, attach}
 import freechips.rocketchip.config._
 import freechips.rocketchip.diplomacy._
 import freechips.rocketchip.tilelink._
 import freechips.rocketchip.util.SyncResetSynchronizerShiftReg
 import sifive.fpgashells.clocks._
 import sifive.fpgashells.devices.pango.ddr3.{PangoPGL22GMIG, PangoPGL22GMIGPads, PangoPGL22GMIGParams}
+import sifive.fpgashells.ip.pango.{FPGAStart, GTP_INBUF, GTP_IOBUF}
 import sifive.fpgashells.shell._
-import sifive.fpgashells.ip.xilinx._
-import sifive.fpgashells.shell.pango.{PangoShell, SingleEndedClockInputPangoPlacedOverlay}
+import sifive.fpgashells.shell.pango.{ChipLinkPangoPlacedOverlay, PangoShell, SingleEndedClockInputPangoPlacedOverlay, UARTPangoPlacedOverlay}
 
 class SysClockPGL22GPlacedOverlay(val shell: PGL22GShellBasicOverlays, name: String, val designInput: ClockInputDesignInput, val shellInput: ClockInputShellInput)
   extends SingleEndedClockInputPangoPlacedOverlay(name, designInput, shellInput)
@@ -277,9 +278,49 @@ class CTSResetPGL22GShellPlacer(val shell: PGL22GShellBasicOverlays, val shellIn
   extends CTSResetShellPlacer[PGL22GShellBasicOverlays] {
   def place(designInput: CTSResetDesignInput) = new CTSResetPGL22GPlacedOverlay(shell, valName.name, designInput, shellInput)
 }
+class ChipLinkPGL22GPlacedOverlay(val shell: PGL22GShellBasicOverlays, name: String, val designInput: ChipLinkDesignInput, val shellInput: ChipLinkShellInput)
+  extends ChipLinkPangoPlacedOverlay(name, designInput, shellInput, rxPhase= -120, txPhase= -90, rxMargin=0.6, txMargin=0.5)
+{
+  val ereset_n = shell { InModuleBody {
+    val ereset_n = IO(Analog(1.W))
+    ereset_n.suggestName("ereset_n")
+    val pin = IOPin(ereset_n, 0)
+    shell.xdc.addPackagePin(pin, "BC8")
+    shell.xdc.addIOStandard(pin, "LVCMOS18")
+    shell.xdc.addTermination(pin, "NONE")
+    shell.xdc.addPullup(pin)
 
+    val iobuf = Module(new GTP_IOBUF)
+    iobuf.suggestName("chiplink_ereset_iobuf")
+    attach(ereset_n, iobuf.io.IO)
+    iobuf.io.T := true.B // !oe
+    iobuf.io.I := false.B
+
+    iobuf.io.O
+  } }
+
+  shell { InModuleBody {
+    val dir1 = Seq("BC9", "AV8", "AV9", /* clk, rst, send */
+      "AY9",  "BA9",  "BF10", "BF9",  "BC11", "BD11", "BD12", "BE12",
+      "BF12", "BF11", "BE14", "BF14", "BD13", "BE13", "BC15", "BD15",
+      "BE15", "BF15", "BA14", "BB14", "BB13", "BB12", "BA16", "BA15",
+      "BC14", "BC13", "AY8",  "AY7",  "AW8",  "AW7",  "BB16", "BC16")
+    val dir2 = Seq("AV14", "AK13", "AK14", /* clk, rst, send */
+      "AR14", "AT14", "AP12", "AR12", "AW12", "AY12", "AW11", "AY10",
+      "AU11", "AV11", "AW13", "AY13", "AN16", "AP16", "AP13", "AR13",
+      "AT12", "AU12", "AK15", "AL15", "AL14", "AM14", "AV10", "AW10",
+      "AN15", "AP15", "AK12", "AL12", "AM13", "AM12", "AJ13", "AJ12")
+    (IOPin.of(io.b2c) zip dir1) foreach { case (io, pin) => shell.xdc.addPackagePin(io, pin) }
+    (IOPin.of(io.c2b) zip dir2) foreach { case (io, pin) => shell.xdc.addPackagePin(io, pin) }
+  } }
+}
+class ChipLinkPGL22GShellPlacer(shell: PGL22GShellBasicOverlays, val shellInput: ChipLinkShellInput)(implicit val valName: ValName)
+  extends ChipLinkShellPlacer[PGL22GShellBasicOverlays] {
+  def place(designInput: ChipLinkDesignInput) = new ChipLinkPGL22GPlacedOverlay(shell, valName.name, designInput, shellInput)
+}
 
 abstract class PGL22GShellBasicOverlays()(implicit p: Parameters) extends PangoShell {
+  override val pllReset = InModuleBody { Wire(Bool()) }
   // Order matters; ddr depends on sys_clock
   val sys_clock = Overlay(ClockInputOverlayKey, new SysClockPGL22GShellPlacer(this, ClockInputShellInput()))
   // val led       = Seq.tabulate(16)(i => Overlay(LEDOverlayKey, new LEDPGL22GShellPlacer(this, LEDMetas(i))(valName = ValName(s"led_$i"))))
@@ -293,6 +334,7 @@ abstract class PGL22GShellBasicOverlays()(implicit p: Parameters) extends PangoS
   val spi_flash = Overlay(SPIFlashOverlayKey, new SPIFlashPGL22GShellPlacer(this, SPIFlashShellInput()))
   val cts_reset = Overlay(CTSResetOverlayKey, new CTSResetPGL22GShellPlacer(this, CTSResetShellInput()))
   // val jtagBScan = Overlay(JTAGDebugBScanOverlayKey, new JTAGDebugBScanPGL22GShellPlacer(this, JTAGDebugBScanShellInput()))
+  val chiplink  = Overlay(ChipLinkOverlayKey, new ChipLinkPGL22GShellPlacer(this, ChipLinkShellInput()))
 
   def LEDMetas(i: Int): LEDShellInput =
     LEDShellInput(
@@ -304,7 +346,7 @@ abstract class PGL22GShellBasicOverlays()(implicit p: Parameters) extends PangoS
 class PGL22GShell()(implicit p: Parameters) extends PGL22GShellBasicOverlays
 {
   // PLL reset causes
-  val pllReset = InModuleBody { Wire(Bool()) }
+  override val pllReset = InModuleBody { Wire(Bool()) }
 
   val topDesign = LazyModule(p(DesignKey)(designParameters))
 
@@ -315,12 +357,12 @@ class PGL22GShell()(implicit p: Parameters) extends PGL22GShellBasicOverlays
     val reset = IO(Input(Bool()))
     xdc.addBoardPin(reset, "reset")
 
-    val reset_ibuf = Module(new IBUF)
+    val reset_ibuf = Module(new GTP_INBUF)
     reset_ibuf.io.I := reset
     val sysclk: Clock = sys_clock.get() match {
       case Some(x: SysClockPGL22GPlacedOverlay) => x.clock
     }
-    val powerOnReset = PowerOnResetFPGAOnly(sysclk)
+    val powerOnReset = FPGAStart(sysclk)
     sdc.addAsyncPath(Seq(powerOnReset))
 
     pllReset :=
@@ -332,7 +374,7 @@ class PGL22GShellGPIOPMOD()(implicit p: Parameters) extends PGL22GShellBasicOver
   //This is the Shell used for coreip arty builds, with GPIOS and trace signals on the pmods
 {
   // PLL reset causes
-  val pllReset = InModuleBody { Wire(Bool()) }
+  override val pllReset = InModuleBody { Wire(Bool()) }
 
   // val gpio_pmod = Overlay(GPIOPMODOverlayKey, new GPIOPMODPGL22GShellPlacer(this, GPIOPMODShellInput()))
   // val trace_pmod = Overlay(TracePMODOverlayKey, new TracePMODPGL22GShellPlacer(this, TracePMODShellInput()))
@@ -346,13 +388,13 @@ class PGL22GShellGPIOPMOD()(implicit p: Parameters) extends PGL22GShellBasicOver
     val reset = IO(Input(Bool()))
     xdc.addBoardPin(reset, "reset")
 
-    val reset_ibuf = Module(new IBUF)
+    val reset_ibuf = Module(new GTP_INBUF)
     reset_ibuf.io.I := reset
 
     val sysclk: Clock = sys_clock.get() match {
       case Some(x: SysClockPGL22GPlacedOverlay) => x.clock
     }
-    val powerOnReset = PowerOnResetFPGAOnly(sysclk)
+    val powerOnReset = FPGAStart(sysclk)
     sdc.addAsyncPath(Seq(powerOnReset))
     val ctsReset: Bool = cts_reset.get() match {
       case Some(x: CTSResetPGL22GPlacedOverlay) => x.designInput.rst

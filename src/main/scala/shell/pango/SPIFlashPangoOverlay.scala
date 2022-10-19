@@ -1,4 +1,4 @@
-package sifive.fpgashells.shell.xilinx
+package sifive.fpgashells.shell.pango
 
 import chisel3._
 import chisel3.util.Cat
