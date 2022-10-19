@@ -71,7 +71,7 @@ abstract class PangoShell()(implicit p: Parameters) extends IOShell
     // files. The long term solution is to make an overlay that does nothing but include .xdc constraints
 }
 
-abstract class Series7Shell()(implicit p: Parameters) extends PangoShell
+abstract class PangoPGL22GShell()(implicit p: Parameters) extends PangoShell
 {
   val pllFactory = new PLLFactory(this, 7, p => Module(new PangoPLL(p)))
   override def designParameters = super.designParameters.alterPartial {

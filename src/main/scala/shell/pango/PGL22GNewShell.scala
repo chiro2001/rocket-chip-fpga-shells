@@ -4,13 +4,10 @@ import chisel3._
 import chisel3.experimental.{Analog, IO, attach}
 import freechips.rocketchip.config._
 import freechips.rocketchip.diplomacy._
-import freechips.rocketchip.tilelink._
-import freechips.rocketchip.util.SyncResetSynchronizerShiftReg
 import sifive.fpgashells.clocks._
 import sifive.fpgashells.devices.pango.ddr3.{PangoPGL22GMIG, PangoPGL22GMIGPads, PangoPGL22GMIGParams}
 import sifive.fpgashells.ip.pango.{FPGAStart, GTP_INBUF, GTP_IOBUF}
 import sifive.fpgashells.shell._
-import sifive.fpgashells.shell.pango.{ChipLinkPangoPlacedOverlay, PangoShell, SingleEndedClockInputPangoPlacedOverlay, UARTPangoPlacedOverlay}
 
 class SysClockPGL22GPlacedOverlay(val shell: PGL22GShellBasicOverlays, name: String, val designInput: ClockInputDesignInput, val shellInput: ClockInputShellInput)
   extends SingleEndedClockInputPangoPlacedOverlay(name, designInput, shellInput)
@@ -319,7 +316,7 @@ class ChipLinkPGL22GShellPlacer(shell: PGL22GShellBasicOverlays, val shellInput:
   def place(designInput: ChipLinkDesignInput) = new ChipLinkPGL22GPlacedOverlay(shell, valName.name, designInput, shellInput)
 }
 
-abstract class PGL22GShellBasicOverlays()(implicit p: Parameters) extends PangoShell {
+abstract class PGL22GShellBasicOverlays()(implicit p: Parameters) extends PangoPGL22GShell {
   override val pllReset = InModuleBody { Wire(Bool()) }
   // Order matters; ddr depends on sys_clock
   val sys_clock = Overlay(ClockInputOverlayKey, new SysClockPGL22GShellPlacer(this, ClockInputShellInput()))

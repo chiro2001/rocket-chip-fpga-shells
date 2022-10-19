@@ -10,15 +10,15 @@ case object MemoryPangoDDRKey extends Field[PangoPGL22GMIGParams]
 trait HasMemoryPangoPGL22GMIG { this: BaseSubsystem =>
   val module: HasMemoryPangoPGL22GMIGModuleImp
 
-  val xilinxvcu118mig = LazyModule(new PangoPGL22GMIG(p(MemoryPangoDDRKey)))
+  val pangopgl22gmig = LazyModule(new PangoPGL22GMIG(p(MemoryPangoDDRKey)))
 
-  xilinxvcu118mig.node := mbus.toDRAMController(Some("xilinxvcu118mig"))()
+  pangopgl22gmig.node := mbus.toDRAMController(Some("pangopgl22gmig"))()
 }
 
 trait HasMemoryPangoPGL22GMIGBundle {
-  val xilinxvcu118mig: PangoPGL22GMIGIO
+  val pangopgl22gmig: PangoPGL22GMIGIO
   def connectPangoPGL22GMIGToPads(pads: PangoPGL22GMIGPads) {
-    pads <> xilinxvcu118mig
+    pads <> pangopgl22gmig
   }
 }
 
@@ -28,9 +28,9 @@ trait HasMemoryPangoPGL22GMIGModuleImp extends LazyModuleImp
   val ranges = AddressRange.fromSets(p(MemoryPangoDDRKey).address)
   require (ranges.size == 1, "DDR range must be contiguous")
   val depth = ranges.head.size
-  val xilinxvcu118mig = IO(new PangoPGL22GMIGIO(depth))
+  val pangopgl22gmig = IO(new PangoPGL22GMIGIO(depth))
 
-  xilinxvcu118mig <> outer.xilinxvcu118mig.module.io.port
+  pangopgl22gmig <> outer.pangopgl22gmig.module.io.port
 }
 
 /*
