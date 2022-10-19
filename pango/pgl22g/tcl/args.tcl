@@ -8,7 +8,9 @@ set project_name $top
 
 set top_file ${long_name}.top.v
 set top_sim_file no_file.v
-set source_files [list ${top_file} ${long_name}.harness.v EICG_wrapper.v plusarg_reader.v IOCell.v ClockDividerN.sv ${fpga_dir}/common/vsrc/mem.v ${fpga_dir}/common/vsrc/mem_split.v]
+set source_files [list \
+  ${fpga_dir}/common/vsrc/mem.v \
+  ${fpga_dir}/common/vsrc/mem_split.v]
 
 # define FPGA Chip
 # set device PGL22G-6MBG324

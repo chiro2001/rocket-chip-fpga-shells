@@ -6,7 +6,7 @@ import freechips.rocketchip.config._
 import freechips.rocketchip.diplomacy._
 import sifive.fpgashells.clocks._
 import sifive.fpgashells.devices.pango.ddr3.{PangoPGL22GMIG, PangoPGL22GMIGPads, PangoPGL22GMIGParams}
-import sifive.fpgashells.ip.pango.{FPGAStart, GTP_INBUF, GTP_IOBUF}
+import sifive.fpgashells.ip.pango.{PowerOnResetFPGAOnly, GTP_INBUF, GTP_IOBUF}
 import sifive.fpgashells.shell._
 
 class SysClockPGL22GPlacedOverlay(val shell: PGL22GShellBasicOverlays, name: String, val designInput: ClockInputDesignInput, val shellInput: ClockInputShellInput)
@@ -359,7 +359,7 @@ class PGL22GShell()(implicit p: Parameters) extends PGL22GShellBasicOverlays
     val sysclk: Clock = sys_clock.get() match {
       case Some(x: SysClockPGL22GPlacedOverlay) => x.clock
     }
-    val powerOnReset = FPGAStart(sysclk)
+    val powerOnReset = PowerOnResetFPGAOnly(sysclk)
     sdc.addAsyncPath(Seq(powerOnReset))
 
     pllReset :=
@@ -391,7 +391,7 @@ class PGL22GShellGPIOPMOD()(implicit p: Parameters) extends PGL22GShellBasicOver
     val sysclk: Clock = sys_clock.get() match {
       case Some(x: SysClockPGL22GPlacedOverlay) => x.clock
     }
-    val powerOnReset = FPGAStart(sysclk)
+    val powerOnReset = PowerOnResetFPGAOnly(sysclk)
     sdc.addAsyncPath(Seq(powerOnReset))
     val ctsReset: Bool = cts_reset.get() match {
       case Some(x: CTSResetPGL22GPlacedOverlay) => x.designInput.rst

@@ -16,6 +16,14 @@ foreach {f} $source_files {
   add_design $f
 }
 
+foreach {f} [ glob *.v ] {
+  add_design $f
+}
+remove_design ${long_name}.top.mems.v
+foreach {f} [ glob *.sv ] {
+  add_design $f
+}
+
 # can auto select the first module in sim file
 if { [file exists $top_sim_file] == 1} {
   puts "Adding sim file: $top_sim_file!"

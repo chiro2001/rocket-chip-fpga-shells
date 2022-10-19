@@ -18,16 +18,16 @@ import freechips.rocketchip.diplomacy.LazyModule
 
 // This is a FPGA-Only construct, which uses
 // 'initial' constructions
-class FPGAStart extends BlackBox {
+class PowerOnResetFPGAOnly extends BlackBox {
   val io = new Bundle {
     val clock = Input(Clock())
     val power_on_reset = Output(Bool())
   }
 }
 
-object FPGAStart {
+object PowerOnResetFPGAOnly {
   def apply (clk: Clock, name: String): Bool = {
-    val por = Module(new FPGAStart())
+    val por = Module(new PowerOnResetFPGAOnly())
     por.suggestName(name)
     por.io.clock := clk
     por.io.power_on_reset

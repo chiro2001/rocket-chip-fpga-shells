@@ -1,5 +1,5 @@
 // See LICENSE file for license details.
-(* keep_hierarchy = "yes" *) module FPGAStart
+(* keep_hierarchy = "yes" *) module PowerOnResetFPGAOnly
 #(parameter N = 32;)(
 input clock,
 (* dont_touch = "true" *) output power_on_reset
