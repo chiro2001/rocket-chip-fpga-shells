@@ -6,7 +6,7 @@
 --   * Change the net names in the port map.
 
 
-COMPONENT drm_tag
+COMPONENT drm_8x64
   PORT (
     wr_data : IN STD_LOGIC_VECTOR(7 DOWNTO 0);
     wr_addr : IN STD_LOGIC_VECTOR(5 DOWNTO 0);
@@ -22,7 +22,7 @@ COMPONENT drm_tag
 END COMPONENT;
 
 
-the_instance_name : drm_tag
+the_instance_name : drm_8x64
   PORT MAP (
     wr_data => wr_data,
     wr_addr => wr_addr,

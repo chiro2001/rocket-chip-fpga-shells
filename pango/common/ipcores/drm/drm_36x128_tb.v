@@ -12,19 +12,19 @@
 //
 //////////////////////////////////////////////////////////////////////////////
 // Library:
-// Filename:TB drm_data2_tb.v 
+// Filename:TB drm_36x128_tb.v 
 //////////////////////////////////////////////////////////////////////////////
 `timescale   1ns / 1ps
 
-module  drm_data2_tb;
+module  drm_36x128_tb;
 localparam  T_CLK_PERIOD       = 10 ;       //clock a half perid
 localparam  T_RST_TIME         = 200 ;       //reset time 
 
-localparam WR_ADDR_WIDTH = 10 ; // @IPC int 9,20
+localparam WR_ADDR_WIDTH = 7 ; // @IPC int 9,20
 
 localparam WR_DATA_WIDTH = 8 ; // @IPC int 1,1152
 
-localparam RD_ADDR_WIDTH = 10 ; // @IPC int 9,20
+localparam RD_ADDR_WIDTH = 7 ; // @IPC int 9,20
 
 localparam RD_DATA_WIDTH = 8 ; // @IPC int 1,1152
 
@@ -302,7 +302,7 @@ GTP_GRS GRS_INST(
     .GRS_N(1'b1)
     ) ;
 
-drm_data2 U_drm_data2 (
+drm_36x128 U_drm_36x128 (
     .wr_data        ( tb_wrdata_cnt                 ),
     .wr_addr        ( tb_wr_addr[WR_ADDR_WIDTH-1:0] ),
     .wr_en          ( tb_wr_en                      ),

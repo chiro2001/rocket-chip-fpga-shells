@@ -8,7 +8,7 @@ import freechips.rocketchip.subsystem._
 import freechips.rocketchip.diplomacy._
 import freechips.rocketchip.tilelink._
 import freechips.rocketchip.interrupts._
-import sifive.fpgashells.ip.pango.ddr3.{PGL22GMIGIOClocksReset, PGL22GMIGIODDR, pgl22gmig}
+import sifive.fpgashells.ip.pango.ddr3.{PGL22GMIGIOClocksReset, PGL22GMIGIODDR, hmemc}
 
 case class PangoPGL22GMIGParams(
   address : Seq[AddressSet]
@@ -28,7 +28,7 @@ class PangoPGL22GMIGIsland(c : PangoPGL22GMIGParams)(implicit p: Parameters) ext
   val offset = ranges.head.base
   val depth = ranges.head.size
   val crossing = AsynchronousCrossing(8)
-  require((depth<=0x80000000L),"pgl22gmig supports upto 2GB depth configuraton")
+  require((depth<=0x80000000L),"hmemc supports upto 2GB depth configuraton")
   
   val device = new MemoryDevice
   val node = AXI4SlaveNode(Seq(AXI4SlavePortParameters(
@@ -47,7 +47,7 @@ class PangoPGL22GMIGIsland(c : PangoPGL22GMIGParams)(implicit p: Parameters) ext
     })
 
     //MIG black box instantiation
-    val blackbox = Module(new pgl22gmig(depth))
+    val blackbox = Module(new hmemc(depth))
     val (axi_async, _) = node.in(0)
 
     //pins to top level

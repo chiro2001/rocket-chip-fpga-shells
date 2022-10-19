@@ -6,7 +6,7 @@ import freechips.rocketchip.util.{ElaborationArtefacts}
 import freechips.rocketchip.util.GenericParameterizedBundle
 import freechips.rocketchip.config._
 
-// IP VLNV: xilinx.com:customize_ip:pgl22gmig:1.0
+// IP VLNV: xilinx.com:customize_ip:hmemc:1.0
 // Black Box
 
 class PGL22GMIGIODDR(depth : BigInt) extends GenericParameterizedBundle(depth) {
@@ -29,7 +29,7 @@ class PGL22GMIGIODDR(depth : BigInt) extends GenericParameterizedBundle(depth) {
   val ddr3_dqs_p = Analog(2.W)
 }
 
-//reused directly in io bundle for sifive.blocks.devices.xilinxpgl22gmig
+//reused directly in io bundle for sifive.blocks.devices.xilinxhmemc
 trait PGL22GMIGIOClocksReset extends Bundle {
   // 外部参考时钟输入
   val pll_refclk_in = Bool(INPUT)
@@ -61,9 +61,9 @@ trait PGL22GMIGIOClocksReset extends Bundle {
 
 //scalastyle:off
 //turn off linter: blackbox name must match verilog module
-class pgl22gmig(depth : BigInt)(implicit val p:Parameters) extends BlackBox
+class hmemc(depth : BigInt)(implicit val p:Parameters) extends BlackBox
 {
-  require((depth<=0x80000000L),"pgl22gmig supports upto 2GB depth configuraton")
+  require((depth<=0x80000000L),"hmemc supports upto 2GB depth configuraton")
 
   val io = new PGL22GMIGIODDR(depth) with PGL22GMIGIOClocksReset {
     //axi_s
@@ -114,9 +114,9 @@ class pgl22gmig(depth : BigInt)(implicit val p:Parameters) extends BlackBox
   }
 
   ElaborationArtefacts.add(
-    "pgl22gmig.vivado.tcl",
+    "hmemc.vivado.tcl",
     """ 
-      create_ip -vendor xilinx.com -library ip -version 2.2 -name ddr4 -module_name pgl22gmig -dir $ipdir -force
+      create_ip -vendor xilinx.com -library ip -version 2.2 -name ddr4 -module_name hmemc -dir $ipdir -force
       set_property -dict [list \
       CONFIG.AL_SEL                               {0} \
       CONFIG.C0.ADDR_WIDTH                        {17} \
@@ -191,7 +191,7 @@ class pgl22gmig(depth : BigInt)(implicit val p:Parameters) extends BlackBox
       CONFIG.TIMING_3DS                           {false} \
       CONFIG.TIMING_OP1                           {false} \
       CONFIG.TIMING_OP2                           {false} \
-      ] [get_ips pgl22gmig]"""
+      ] [get_ips hmemc]"""
   )
 
 }

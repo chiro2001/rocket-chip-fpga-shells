@@ -12,10 +12,10 @@
 //
 //////////////////////////////////////////////////////////////////////////////
 // Library:
-// Filename:drm_tag.v
+// Filename:drm_32x1024.v
 //////////////////////////////////////////////////////////////////////////////
 
-module drm_tag
+module drm_32x1024
     (
     wr_data        , //input write data
     wr_addr        , //input write address
@@ -23,8 +23,6 @@ module drm_tag
     wr_clk         , //input write clock
     
     wr_rst         , //input write reset
-    
-    wr_byte_en     , //input write reset
     
     rd_data        , //output read data
     rd_addr        , //input read address
@@ -34,13 +32,13 @@ module drm_tag
     );
 
 
-localparam WR_ADDR_WIDTH = 6 ; // @IPC int 9,20
+localparam WR_ADDR_WIDTH = 10 ; // @IPC int 9,20
 
-localparam WR_DATA_WIDTH = 8 ; // @IPC int 1,1152
+localparam WR_DATA_WIDTH = 32 ; // @IPC int 1,1152
 
-localparam RD_ADDR_WIDTH = 6 ; // @IPC int 9,20
+localparam RD_ADDR_WIDTH = 10 ; // @IPC int 9,20
 
-localparam RD_DATA_WIDTH = 8 ; // @IPC int 1,1152
+localparam RD_DATA_WIDTH = 32 ; // @IPC int 1,1152
 
 localparam OUTPUT_REG = 0 ; // @IPC bool
 
@@ -56,7 +54,7 @@ localparam INIT_FILE = "NONE" ; // @IPC string
 
 localparam INIT_FORMAT = "BIN" ; // @IPC enum BIN,HEX
 
-localparam WR_BYTE_EN = 1 ; // @IPC bool
+localparam WR_BYTE_EN = 0 ; // @IPC bool
 
 localparam BE_WIDTH = 1 ; // @IPC int 2,128
 
@@ -91,8 +89,6 @@ input                         wr_en          ; //input write enable
 input                         wr_clk         ; //input write clock
 
 input                         wr_rst         ; //input write reset
-
-input  [BE_WIDTH-1:0]         wr_byte_en     ; //input write reset
 
 output [RD_DATA_WIDTH-1:0]    rd_data        ; //output read data    [C_RD_DATA_WIDTH-1:0]
 input  [RD_ADDR_WIDTH-1:0]    rd_addr        ; //input read address [RD_ADDR_WIDTH-1:0]
@@ -140,7 +136,7 @@ assign rd_data         = ((DEVICE_NAME == "PGT30G") && (RD_DATA_WIDTH <= 9)) ? r
 
 
 //ipml_sdpram IP instance
-ipml_sdpram_v1_6_drm_tag
+ipml_sdpram_v1_6_drm_32x1024
     #(
     .c_SIM_DEVICE           (SIM_DEVICE             ),
     .c_WR_ADDR_WIDTH        (WR_ADDR_WIDTH          ),
@@ -160,7 +156,7 @@ ipml_sdpram_v1_6_drm_tag
     .c_INIT_FORMAT          (INIT_FORMAT            ),
     .c_WR_BYTE_EN           (WR_BYTE_EN             ),
     .c_BE_WIDTH             (BE_WIDTH               )
-    ) U_ipml_sdpram_drm_tag
+    ) U_ipml_sdpram_drm_32x1024
     (
     .wr_data                (wr_data_wrap           ),//input write data
     .wr_addr                (wr_addr                ),//input write address

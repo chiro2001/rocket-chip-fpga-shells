@@ -12,23 +12,23 @@
 //
 //////////////////////////////////////////////////////////////////////////////
 // Library:
-// Filename:TB drm_data_tb.v 
+// Filename:TB drm_32x1024_tb.v 
 //////////////////////////////////////////////////////////////////////////////
 `timescale   1ns / 1ps
 
-module  drm_data_tb;
+module  drm_32x1024_tb;
 localparam  T_CLK_PERIOD       = 10 ;       //clock a half perid
 localparam  T_RST_TIME         = 200 ;       //reset time 
 
-localparam WR_ADDR_WIDTH = 12 ; // @IPC int 9,20
+localparam WR_ADDR_WIDTH = 10 ; // @IPC int 9,20
 
-localparam WR_DATA_WIDTH = 8 ; // @IPC int 1,1152
+localparam WR_DATA_WIDTH = 32 ; // @IPC int 1,1152
 
-localparam RD_ADDR_WIDTH = 12 ; // @IPC int 9,20
+localparam RD_ADDR_WIDTH = 10 ; // @IPC int 9,20
 
-localparam RD_DATA_WIDTH = 8 ; // @IPC int 1,1152
+localparam RD_DATA_WIDTH = 32 ; // @IPC int 1,1152
 
-localparam OUTPUT_REG = 1 ; // @IPC bool
+localparam OUTPUT_REG = 0 ; // @IPC bool
 
 localparam RD_OCE_EN = 0 ; // @IPC bool
 
@@ -42,7 +42,7 @@ localparam INIT_FILE = "NONE" ; // @IPC string
 
 localparam INIT_FORMAT = "BIN" ; // @IPC enum BIN,HEX
 
-localparam WR_BYTE_EN = 1 ; // @IPC bool
+localparam WR_BYTE_EN = 0 ; // @IPC bool
 
 localparam BE_WIDTH = 1 ; // @IPC int 2,128
 
@@ -302,15 +302,13 @@ GTP_GRS GRS_INST(
     .GRS_N(1'b1)
     ) ;
 
-drm_data U_drm_data (
+drm_32x1024 U_drm_32x1024 (
     .wr_data        ( tb_wrdata_cnt                 ),
     .wr_addr        ( tb_wr_addr[WR_ADDR_WIDTH-1:0] ),
     .wr_en          ( tb_wr_en                      ),
     .wr_clk         ( wr_clk                        ),
 
     .wr_rst         ( tb_wr_rst                     ),
-
-    .wr_byte_en     ( tb_wr_byte_en                 ),
 
     .rd_data        ( tb_rddata                     ),
     .rd_addr        ( tb_rd_addr[RD_ADDR_WIDTH-1:0] ),

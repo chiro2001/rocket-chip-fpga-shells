@@ -12,10 +12,10 @@
 //
 //////////////////////////////////////////////////////////////////////////////
 // Library:
-// Filename:drm_data.v
+// Filename:drm_36x128.v
 //////////////////////////////////////////////////////////////////////////////
 
-module drm_data
+module drm_36x128
     (
     wr_data        , //input write data
     wr_addr        , //input write address
@@ -34,15 +34,15 @@ module drm_data
     );
 
 
-localparam WR_ADDR_WIDTH = 12 ; // @IPC int 9,20
+localparam WR_ADDR_WIDTH = 7 ; // @IPC int 9,20
 
 localparam WR_DATA_WIDTH = 8 ; // @IPC int 1,1152
 
-localparam RD_ADDR_WIDTH = 12 ; // @IPC int 9,20
+localparam RD_ADDR_WIDTH = 7 ; // @IPC int 9,20
 
 localparam RD_DATA_WIDTH = 8 ; // @IPC int 1,1152
 
-localparam OUTPUT_REG = 1 ; // @IPC bool
+localparam OUTPUT_REG = 0 ; // @IPC bool
 
 localparam RD_OCE_EN = 0 ; // @IPC bool
 
@@ -140,7 +140,7 @@ assign rd_data         = ((DEVICE_NAME == "PGT30G") && (RD_DATA_WIDTH <= 9)) ? r
 
 
 //ipml_sdpram IP instance
-ipml_sdpram_v1_6_drm_data
+ipml_sdpram_v1_6_drm_36x128
     #(
     .c_SIM_DEVICE           (SIM_DEVICE             ),
     .c_WR_ADDR_WIDTH        (WR_ADDR_WIDTH          ),
@@ -160,7 +160,7 @@ ipml_sdpram_v1_6_drm_data
     .c_INIT_FORMAT          (INIT_FORMAT            ),
     .c_WR_BYTE_EN           (WR_BYTE_EN             ),
     .c_BE_WIDTH             (BE_WIDTH               )
-    ) U_ipml_sdpram_drm_data
+    ) U_ipml_sdpram_drm_36x128
     (
     .wr_data                (wr_data_wrap           ),//input write data
     .wr_addr                (wr_addr                ),//input write address

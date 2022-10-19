@@ -6,7 +6,7 @@
         <display_name>DRM Based Simple Dual Port RAM</display_name>
         <name>Logos DRM Based Simple Dual Port RAM</name>
         <version>1.6</version>
-        <instance>drm_data</instance>
+        <instance>drm_36x128</instance>
         <family>Logos</family>
         <device>PGL22G</device>
         <package>MBG324</package>
@@ -15,32 +15,40 @@
     </header>
     <param_list>
         <param>
-            <name>RD_BE_WIDTH</name>
-            <value>1</value>
-        </param>
-        <param>
-            <name>WR_BYTE_EN</name>
-            <value>true</value>
-        </param>
-        <param>
-            <name>MODE_9K</name>
-            <value>false</value>
-        </param>
-        <param>
-            <name>RD_OCE_EN</name>
-            <value>false</value>
+            <name>RD_ADDR_WIDTH</name>
+            <value>7</value>
         </param>
         <param>
             <name>INIT_FORMAT</name>
             <value>BIN</value>
         </param>
         <param>
+            <name>WR_DATA_WIDTH</name>
+            <value>8</value>
+        </param>
+        <param>
             <name>INIT_EN</name>
             <value>false</value>
         </param>
         <param>
-            <name>BYTE_SIZE</name>
+            <name>RD_CLK_EN</name>
+            <value>false</value>
+        </param>
+        <param>
+            <name>RD_DATA_WIDTH</name>
             <value>8</value>
+        </param>
+        <param>
+            <name>BE_WIDTH</name>
+            <value>1</value>
+        </param>
+        <param>
+            <name>INIT_FILE</name>
+            <value>NONE</value>
+        </param>
+        <param>
+            <name>RD_BE_WIDTH</name>
+            <value>1</value>
         </param>
         <param>
             <name>RESET_TYPE</name>
@@ -51,63 +59,55 @@
             <value>false</value>
         </param>
         <param>
-            <name>RD_CLK_EN</name>
-            <value>false</value>
-        </param>
-        <param>
-            <name>SAMEWIDTH_EN</name>
+            <name>MODE_9K</name>
             <value>true</value>
-        </param>
-        <param>
-            <name>INIT_FILE</name>
-            <value>NONE</value>
-        </param>
-        <param>
-            <name>RD_ADDR_WIDTH</name>
-            <value>12</value>
         </param>
         <param>
             <name>OUTPUT_REG</name>
-            <value>true</value>
-        </param>
-        <param>
-            <name>RD_DATA_WIDTH</name>
-            <value>8</value>
-        </param>
-        <param>
-            <name>RD_ADDR_STROBE_EN</name>
             <value>false</value>
-        </param>
-        <param>
-            <name>WR_ADDR_WIDTH</name>
-            <value>12</value>
-        </param>
-        <param>
-            <name>BE_WIDTH</name>
-            <value>1</value>
         </param>
         <param>
             <name>DRM_MODE_SEL</name>
             <value>AUTO</value>
         </param>
         <param>
-            <name>WR_DATA_WIDTH</name>
+            <name>BYTE_SIZE</name>
             <value>8</value>
         </param>
         <param>
-            <name>POWER_OPT</name>
+            <name>MODE_18K</name>
             <value>false</value>
         </param>
         <param>
-            <name>MODE_18K</name>
-            <value>true</value>
+            <name>RD_OCE_EN</name>
+            <value>false</value>
         </param>
         <param>
             <name>WR_CLK_EN</name>
             <value>false</value>
         </param>
         <param>
+            <name>WR_BYTE_EN</name>
+            <value>true</value>
+        </param>
+        <param>
+            <name>WR_ADDR_WIDTH</name>
+            <value>7</value>
+        </param>
+        <param>
+            <name>SAMEWIDTH_EN</name>
+            <value>true</value>
+        </param>
+        <param>
             <name>RD_CLK_OR_POL_INV</name>
+            <value>false</value>
+        </param>
+        <param>
+            <name>RD_ADDR_STROBE_EN</name>
+            <value>false</value>
+        </param>
+        <param>
+            <name>POWER_OPT</name>
             <value>false</value>
         </param>
     </param_list>
@@ -125,7 +125,7 @@
             <text>wr_addr</text>
             <dir>input</dir>
             <pos>left</pos>
-            <msb>11</msb>
+            <msb>6</msb>
             <lsb>0</lsb>
         </pin>
         <pin>
@@ -157,7 +157,7 @@
             <text>rd_addr</text>
             <dir>input</dir>
             <pos>right</pos>
-            <msb>11</msb>
+            <msb>6</msb>
             <lsb>0</lsb>
         </pin>
         <pin>
@@ -188,12 +188,12 @@
     <file_list>
         <output>
             <file pathname="generate.log" format="log" description="Generate Log"/>
-            <file pathname="drm_data_tmpl.v" format="verilog" description="Instantiation Template"/>
-            <file pathname="drm_data_tmpl.vhdl" format="vhdl" description="Instantiation Template"/>
+            <file pathname="drm_36x128_tmpl.v" format="verilog" description="Instantiation Template"/>
+            <file pathname="drm_36x128_tmpl.vhdl" format="vhdl" description="Instantiation Template"/>
         </output>
         <source>
-            <file pathname="rtl/ipml_sdpram_v1_6_drm_data.v"/>
-            <file pathname="drm_data.v"/>
+            <file pathname="rtl/ipml_sdpram_v1_6_drm_36x128.v"/>
+            <file pathname="drm_36x128.v"/>
         </source>
         <specs/>
     </file_list>

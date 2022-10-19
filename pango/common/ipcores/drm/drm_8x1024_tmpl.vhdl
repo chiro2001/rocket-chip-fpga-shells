@@ -6,15 +6,15 @@
 --   * Change the net names in the port map.
 
 
-COMPONENT drm_data
+COMPONENT drm_8x1024
   PORT (
     wr_data : IN STD_LOGIC_VECTOR(7 DOWNTO 0);
-    wr_addr : IN STD_LOGIC_VECTOR(11 DOWNTO 0);
+    wr_addr : IN STD_LOGIC_VECTOR(9 DOWNTO 0);
     wr_en : IN STD_LOGIC;
     wr_byte_en : IN STD_LOGIC;
     wr_clk : IN STD_LOGIC;
     wr_rst : IN STD_LOGIC;
-    rd_addr : IN STD_LOGIC_VECTOR(11 DOWNTO 0);
+    rd_addr : IN STD_LOGIC_VECTOR(9 DOWNTO 0);
     rd_data : OUT STD_LOGIC_VECTOR(7 DOWNTO 0);
     rd_clk : IN STD_LOGIC;
     rd_rst : IN STD_LOGIC
@@ -22,7 +22,7 @@ COMPONENT drm_data
 END COMPONENT;
 
 
-the_instance_name : drm_data
+the_instance_name : drm_8x1024
   PORT MAP (
     wr_data => wr_data,
     wr_addr => wr_addr,

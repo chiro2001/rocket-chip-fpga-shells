@@ -22,7 +22,7 @@ if { [file exists $top_sim_file] == 1} {
   add_simulation $top_sim_file
 }
 
-set ipcores [ glob ipcores/*/*.idf ]
+set ipcores [ glob ${fpga_dir}/common/ipcores/*/*.idf ]
 puts "Importing IP cores: $ipcores"
 foreach {f} $ipcores {
   add_design $f
@@ -46,3 +46,5 @@ foreach {f} $constraints {
 #  puts "Adding fdc file: generated.fdc!"
 #  add_constraint generated.fdc
 # }
+
+compile -system_verilog -top_module ${top}
