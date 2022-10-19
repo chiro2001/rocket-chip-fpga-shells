@@ -1,4 +1,4 @@
-package sifive.fpgashells.shell.pango
+package sifive.fpgashells.shell.xilinx
 
 import chisel3._
 import freechips.rocketchip.diplomacy._

@@ -9,8 +9,7 @@ import sifive.fpgashells.clocks._
 import sifive.fpgashells.devices.pango.ddr3.{PangoPGL22GMIG, PangoPGL22GMIGPads, PangoPGL22GMIGParams}
 import sifive.fpgashells.shell._
 import sifive.fpgashells.ip.xilinx._
-import sifive.fpgashells.devices.xilinx.xilinxarty100tmig._
-import sifive.fpgashells.shell.pango.{PangoShell, SingleEndedClockInputPangoPlacedOverlay, UARTPangoPlacedOverlay}
+import sifive.fpgashells.shell.pango.{PangoShell, SingleEndedClockInputPangoPlacedOverlay}
 
 class SysClockPGL22GPlacedOverlay(val shell: PGL22GShellBasicOverlays, name: String, val designInput: ClockInputDesignInput, val shellInput: ClockInputShellInput)
   extends SingleEndedClockInputPangoPlacedOverlay(name, designInput, shellInput)
@@ -231,11 +230,9 @@ class DDRPGL22GPlacedOverlay(val shell: PGL22GShellBasicOverlays, name: String, 
 {
   val size = p(PGL22GDDRSize)
 
-  val ddrClk1 = shell { ClockSinkNode(freqMHz = 166.666)}
-  val ddrClk2 = shell { ClockSinkNode(freqMHz = 200)}
+  val ddrClk1 = shell { ClockSinkNode(freqMHz = 50)}
   val ddrGroup = shell { ClockGroup() }
   ddrClk1 := di.wrangler := ddrGroup := di.corePLL
-  ddrClk2 := di.wrangler := ddrGroup
 
   val migParams = PangoPGL22GMIGParams(address = AddressSet.misaligned(di.baseAddress, size))
   val mig = LazyModule(new PangoPGL22GMIG(migParams))
@@ -255,15 +252,13 @@ class DDRPGL22GPlacedOverlay(val shell: PGL22GShellBasicOverlays, name: String, 
     val (sys, _) = shell.sys_clock.get.get.overlayOutput.node.out(0)
     val (ui, _) = ddrUI.out(0)
     val (dclk1, _) = ddrClk1.in(0)
-    val (dclk2, _) = ddrClk2.in(0)
     val (ar, _) = areset.in(0)
     val port = topIONode.bundle.port
 
     io <> port
     ui.clock := port.pll_aclk_0
-    ui.reset := !port.pll_lock || port.ui_clk_sync_rst
-    port.sys_clk_i := dclk1.clock.asUInt
-    port.pll_refclk_in := dclk2.clock.asUInt
+    ui.reset := !port.pll_lock
+    port.pll_refclk_in := dclk1.clock.asUInt
     port.ddrc_rst := shell.pllReset
     port.ddr_rstn_key := !ar.reset
   } }
@@ -287,17 +282,17 @@ class CTSResetPGL22GShellPlacer(val shell: PGL22GShellBasicOverlays, val shellIn
 abstract class PGL22GShellBasicOverlays()(implicit p: Parameters) extends PangoShell {
   // Order matters; ddr depends on sys_clock
   val sys_clock = Overlay(ClockInputOverlayKey, new SysClockPGL22GShellPlacer(this, ClockInputShellInput()))
-  val led       = Seq.tabulate(16)(i => Overlay(LEDOverlayKey, new LEDPGL22GShellPlacer(this, LEDMetas(i))(valName = ValName(s"led_$i"))))
-  val switch    = Seq.tabulate(4)(i => Overlay(SwitchOverlayKey, new SwitchPGL22GShellPlacer(this, SwitchShellInput(number = i))(valName = ValName(s"switch_$i"))))
-  val button    = Seq.tabulate(4)(i => Overlay(ButtonOverlayKey, new ButtonPGL22GShellPlacer(this, ButtonShellInput(number = i))(valName = ValName(s"button_$i"))))
+  // val led       = Seq.tabulate(16)(i => Overlay(LEDOverlayKey, new LEDPGL22GShellPlacer(this, LEDMetas(i))(valName = ValName(s"led_$i"))))
+  // val switch    = Seq.tabulate(4)(i => Overlay(SwitchOverlayKey, new SwitchPGL22GShellPlacer(this, SwitchShellInput(number = i))(valName = ValName(s"switch_$i"))))
+  // val button    = Seq.tabulate(4)(i => Overlay(ButtonOverlayKey, new ButtonPGL22GShellPlacer(this, ButtonShellInput(number = i))(valName = ValName(s"button_$i"))))
   val ddr       = Overlay(DDROverlayKey, new DDRPGL22GShellPlacer(this, DDRShellInput()))
   val uart      = Overlay(UARTOverlayKey, new UARTPGL22GShellPlacer(this, UARTShellInput()))
   val sdio      = Overlay(SPIOverlayKey, new SDIOPGL22GShellPlacer(this, SPIShellInput()))
   val jtag      = Overlay(JTAGDebugOverlayKey, new JTAGDebugPGL22GShellPlacer(this, JTAGDebugShellInput()))
-  val cjtag     = Overlay(cJTAGDebugOverlayKey, new cJTAGDebugPGL22GShellPlacer(this, cJTAGDebugShellInput()))
+  // val cjtag     = Overlay(cJTAGDebugOverlayKey, new cJTAGDebugPGL22GShellPlacer(this, cJTAGDebugShellInput()))
   val spi_flash = Overlay(SPIFlashOverlayKey, new SPIFlashPGL22GShellPlacer(this, SPIFlashShellInput()))
   val cts_reset = Overlay(CTSResetOverlayKey, new CTSResetPGL22GShellPlacer(this, CTSResetShellInput()))
-  val jtagBScan = Overlay(JTAGDebugBScanOverlayKey, new JTAGDebugBScanPGL22GShellPlacer(this, JTAGDebugBScanShellInput()))
+  // val jtagBScan = Overlay(JTAGDebugBScanOverlayKey, new JTAGDebugBScanPGL22GShellPlacer(this, JTAGDebugBScanShellInput()))
 
   def LEDMetas(i: Int): LEDShellInput =
     LEDShellInput(
@@ -339,8 +334,8 @@ class PGL22GShellGPIOPMOD()(implicit p: Parameters) extends PGL22GShellBasicOver
   // PLL reset causes
   val pllReset = InModuleBody { Wire(Bool()) }
 
-  val gpio_pmod = Overlay(GPIOPMODOverlayKey, new GPIOPMODPGL22GShellPlacer(this, GPIOPMODShellInput()))
-  val trace_pmod = Overlay(TracePMODOverlayKey, new TracePMODPGL22GShellPlacer(this, TracePMODShellInput()))
+  // val gpio_pmod = Overlay(GPIOPMODOverlayKey, new GPIOPMODPGL22GShellPlacer(this, GPIOPMODShellInput()))
+  // val trace_pmod = Overlay(TracePMODOverlayKey, new TracePMODPGL22GShellPlacer(this, TracePMODShellInput()))
 
   val topDesign = LazyModule(p(DesignKey)(designParameters))
 
