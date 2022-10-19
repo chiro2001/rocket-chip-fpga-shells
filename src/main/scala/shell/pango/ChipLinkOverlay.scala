@@ -3,6 +3,7 @@ package sifive.fpgashells.shell.pango
 import chisel3._
 import freechips.rocketchip.diplomacy._
 import freechips.rocketchip.util._
+import sifive.fpgashells.ip.pango.GTP_INBUFG
 import sifive.fpgashells.shell._
 import sifive.fpgashells.ip.xilinx._
 
@@ -36,7 +37,7 @@ abstract class ChipLinkPangoPlacedOverlay(name: String, di: ChipLinkDesignInput,
     // tap.reset only waits for the TX PLL to lock.
     oddr.io.R  := ResetCatchAndSync(tx.clock, PowerOnResetFPGAOnly(tx.clock))
 
-    val ibufg = Module(new IBUFG)
+    val ibufg = Module(new GTP_INBUFG)
     ibufg.suggestName(s"${name}_rx_ibufg")
     ibufg.io.I := io.b2c.clk
     rx.clock := ibufg.io.O

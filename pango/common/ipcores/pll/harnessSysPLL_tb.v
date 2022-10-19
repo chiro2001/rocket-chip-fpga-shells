@@ -14,11 +14,11 @@
 //////////////////////////////////////////////////////////////////////////////
 //               
 // Library:
-// Filename:pll.v                 
+// Filename:harnessSysPLL.v                 
 //////////////////////////////////////////////////////////////////////////////
 `timescale 1 ns/1 ps
 
-module pll_tb ();
+module harnessSysPLL_tb ();
 
 localparam CLKIN_FREQ = 50.0;
 localparam integer FBDIV_SEL = 0;
@@ -174,13 +174,12 @@ GTP_GRS GRS_INST(
   .GRS_N(1'b1)
  );
 
-pll U_pll (
+harnessSysPLL U_harnessSysPLL (
 .clkout0(clkout0),
     .clkout1(clkout1),
-    .clkout2(clkout2),
     
     .clkin1(clkin1),
-    
+    .pll_rst(pll_rst),
     .pll_lock(pll_lock)
     );
 

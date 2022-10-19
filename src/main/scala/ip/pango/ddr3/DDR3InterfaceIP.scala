@@ -9,24 +9,111 @@ import freechips.rocketchip.config._
 // IP VLNV: xilinx.com:customize_ip:ddr3_core:1.0
 // Black Box
 
-class PGL22GMIGIODDR(depth : BigInt) extends GenericParameterizedBundle(depth) {
-  require((depth<=0x80000000L),"PGL22GMIGIODDR supports upto 2GB depth configuraton")
-  val ddr3_addr = Bits(OUTPUT, 14)
-  val ddr3_ba = Bits(OUTPUT, 3)
-  val ddr3_ras_n = Bool(OUTPUT)
-  val ddr3_cas_n = Bool(OUTPUT)
-  val ddr3_we_n = Bool(OUTPUT)
-  val ddr3_reset_n = Bool(OUTPUT)
-  val ddr3_ck_p = Bits(OUTPUT, 1)
-  val ddr3_ck_n = Bits(OUTPUT, 1)
-  val ddr3_cke = Bits(OUTPUT, 1)
-  val ddr3_cs_n = Bits(OUTPUT, 1)
-  val ddr3_dm = Bits(OUTPUT, 2)
-  val ddr3_odt = Bits(OUTPUT, 1)
+/**
+  .pll_refclk_in(pll_refclk_in),        // input
+  .top_rst_n(top_rst_n),                // input
+  .ddrc_rst(ddrc_rst),                  // input
+  .csysreq_ddrc(csysreq_ddrc),          // input
+  .csysack_ddrc(csysack_ddrc),          // output
+  .cactive_ddrc(cactive_ddrc),          // output
+  .pll_lock(pll_lock),                  // output
+  .pll_aclk_0(pll_aclk_0),              // output
+  .pll_aclk_1(pll_aclk_1),              // output
+  .pll_aclk_2(pll_aclk_2),              // output
+  .ddrphy_rst_done(ddrphy_rst_done),    // output
+  .ddrc_init_done(ddrc_init_done),      // output
 
-  val ddr3_dq = Analog(16.W)
-  val ddr3_dqs_n = Analog(2.W)
-  val ddr3_dqs_p = Analog(2.W)
+  .pad_loop_in(pad_loop_in),            // input
+  .pad_loop_in_h(pad_loop_in_h),        // input
+  // .pad_rstn_ch0(pad_rstn_ch0),          // output
+  // .pad_ddr_clk_w(pad_ddr_clk_w),        // output
+  // .pad_ddr_clkn_w(pad_ddr_clkn_w),      // output
+  // .pad_csn_ch0(pad_csn_ch0),            // output
+  // .pad_addr_ch0(pad_addr_ch0),          // output [15:0]
+  // .pad_dq_ch0(pad_dq_ch0),              // inout [15:0]
+  // .pad_dqs_ch0(pad_dqs_ch0),            // inout [1:0]
+  // .pad_dqsn_ch0(pad_dqsn_ch0),          // inout [1:0]
+  // .pad_dm_rdqs_ch0(pad_dm_rdqs_ch0),    // output [1:0]
+  // .pad_cke_ch0(pad_cke_ch0),            // output
+  // .pad_odt_ch0(pad_odt_ch0),            // output
+  // .pad_rasn_ch0(pad_rasn_ch0),          // output
+  // .pad_casn_ch0(pad_casn_ch0),          // output
+  // .pad_wen_ch0(pad_wen_ch0),            // output
+  // .pad_ba_ch0(pad_ba_ch0),              // output [2:0]
+  .pad_loop_out(pad_loop_out),          // output
+  .pad_loop_out_h(pad_loop_out_h),      // output
+
+  .areset_0(areset_0),                  // input
+  .aclk_0(aclk_0),                      // input
+  .awid_0(awid_0),                      // input [7:0]
+  .awaddr_0(awaddr_0),                  // input [31:0]
+  .awlen_0(awlen_0),                    // input [7:0]
+  .awsize_0(awsize_0),                  // input [2:0]
+  .awburst_0(awburst_0),                // input [1:0]
+  .awlock_0(awlock_0),                  // input
+  .awvalid_0(awvalid_0),                // input
+  .awready_0(awready_0),                // output
+  .awurgent_0(awurgent_0),              // input
+  .awpoison_0(awpoison_0),              // input
+  .wdata_0(wdata_0),                    // input [127:0]
+  .wstrb_0(wstrb_0),                    // input [15:0]
+  .wlast_0(wlast_0),                    // input
+  .wvalid_0(wvalid_0),                  // input
+  .wready_0(wready_0),                  // output
+  .bid_0(bid_0),                        // output [7:0]
+  .bresp_0(bresp_0),                    // output [1:0]
+  .bvalid_0(bvalid_0),                  // output
+  .bready_0(bready_0),                  // input
+  .arid_0(arid_0),                      // input [7:0]
+  .araddr_0(araddr_0),                  // input [31:0]
+  .arlen_0(arlen_0),                    // input [7:0]
+  .arsize_0(arsize_0),                  // input [2:0]
+  .arburst_0(arburst_0),                // input [1:0]
+  .arlock_0(arlock_0),                  // input
+  .arvalid_0(arvalid_0),                // input
+  .arready_0(arready_0),                // output
+  .arpoison_0(arpoison_0),              // input
+  .rid_0(rid_0),                        // output [7:0]
+  .rdata_0(rdata_0),                    // output [127:0]
+  .rresp_0(rresp_0),                    // output [1:0]
+  .rlast_0(rlast_0),                    // output
+  .rvalid_0(rvalid_0),                  // output
+  .rready_0(rready_0),                  // input
+  .arurgent_0(arurgent_0),              // input
+  .csysreq_0(csysreq_0),                // input
+  .csysack_0(csysack_0),                // output
+  .cactive_0(cactive_0)                 // output
+);
+ */
+
+/**
+ *
+ * @param depth
+ */
+
+class PGL22GMIGIODDR(depth : BigInt) extends GenericParameterizedBundle(depth) {
+  // require((depth<=0x80000000L),"PGL22GMIGIODDR supports upto 2GB depth configuraton")
+  val pad_addr_ch0 = Bits(OUTPUT, 16)
+  val pad_ba_ch0 = Bits(OUTPUT, 3)
+  val pad_rasn_ch0 = Bool(OUTPUT)
+  val pad_casn_ch0 = Bool(OUTPUT)
+  val pad_wen_ch0 = Bool(OUTPUT)
+  val pad_rstn_ch0 = Bool(OUTPUT)
+  val pad_ddr_clk_w = Bits(OUTPUT, 1)
+  val pad_ddr_clkn_w = Bits(OUTPUT, 1)
+  val pad_cke_ch0 = Bits(OUTPUT, 1)
+  val pad_csn_ch0 = Bits(OUTPUT, 1)
+  val pad_dm_rdqs_ch0 = Bits(OUTPUT, 2)
+  val pad_odt_ch0 = Bits(OUTPUT, 1)
+  val pad_dq_ch0 = Analog(16.W)
+  val pad_dqsn_ch0 = Analog(2.W)
+  val pad_dqs_ch0 = Analog(2.W)
+
+  // ?
+  val pad_loop_in = Bool(INPUT)
+  val pad_loop_in_h = Bool(INPUT)
+  val pad_loop_out = Bool(OUTPUT)
+  val pad_loop_out_h = Bool(OUTPUT)
 }
 
 //reused directly in io bundle for sifive.blocks.devices.xilinxhmemc
@@ -34,7 +121,7 @@ trait PGL22GMIGIOClocksReset extends Bundle {
   // 外部参考时钟输入
   val pll_refclk_in = Bool(INPUT)
   // 外部复位输入
-  val ddr_rstn_key = Bool(INPUT)
+  val top_rst_n = Bool(INPUT)
   // DDRC 的复位输入
   val ddrc_rst = Bool(INPUT)
   // ddr3_core 内部 PLL lock 信号。
@@ -50,7 +137,7 @@ trait PGL22GMIGIOClocksReset extends Bundle {
   // Axi4 Port2 的时钟
   val pll_aclk_2 = Clock(OUTPUT)
   // APB Port 的时钟
-  val pll_pclk = Clock(OUTPUT)
+  // val pll_pclk = Clock(OUTPUT)
   // DDRC 低功耗请求输入
   val csysreq_ddrc = Bool(INPUT)
   // DDRC 低功耗响应
@@ -68,49 +155,47 @@ class ddr3_core(depth : BigInt)(implicit val p:Parameters) extends BlackBox
   val io = new PGL22GMIGIODDR(depth) with PGL22GMIGIOClocksReset {
     //axi_s
     //slave interface write address ports
-    val s_axi_awid = Bits(INPUT, 4)
-    val s_axi_awaddr = Bits(INPUT, if (depth <= 0x40000000) 30 else 32)
-    val s_axi_awlen = Bits(INPUT, 8)
-    val s_axi_awsize = Bits(INPUT, 3)
-    val s_axi_awburst = Bits(INPUT, 2)
-    val s_axi_awlock = Bits(INPUT, 1)
-    val s_axi_awcache = Bits(INPUT, 4)
-    val s_axi_awprot = Bits(INPUT, 3)
-    val s_axi_awqos = Bits(INPUT, 4)
-    val s_axi_awvalid = Bool(INPUT)
-    val s_axi_awready = Bool(OUTPUT)
+    val awid_0 = Bits(INPUT, 8)
+    val awaddr_0 = Bits(INPUT, 32)
+    val awlen_0 = Bits(INPUT, 8)
+    val awsize_0 = Bits(INPUT, 3)
+    val awburst_0 = Bits(INPUT, 2)
+    val awlock_0 = Bits(INPUT, 1)
+    // val awcache_0 = Bits(INPUT, 4)
+    // val awprot_0 = Bits(INPUT, 3)
+    // val awqos_0 = Bits(INPUT, 4)
+    val awvalid_0 = Bool(INPUT)
+    val awready_0 = Bool(OUTPUT)
     //slave interface write data ports
-    val s_axi_wdata = Bits(INPUT, 64)
-    val s_axi_wstrb = Bits(INPUT, 8)
-    val s_axi_wlast = Bool(INPUT)
-    val s_axi_wvalid = Bool(INPUT)
-    val s_axi_wready = Bool(OUTPUT)
+    val wdata_0 = Bits(INPUT, 128)
+    val wstrb_0 = Bits(INPUT, 16)
+    val wlast_0 = Bool(INPUT)
+    val wvalid_0 = Bool(INPUT)
+    val wready_0 = Bool(OUTPUT)
     //slave interface write response ports
-    val s_axi_bready = Bool(INPUT)
-    val s_axi_bid = Bits(OUTPUT, 4)
-    val s_axi_bresp = Bits(OUTPUT, 2)
-    val s_axi_bvalid = Bool(OUTPUT)
+    val bready_0 = Bool(INPUT)
+    val bid_0 = Bits(OUTPUT, 8)
+    val bresp_0 = Bits(OUTPUT, 2)
+    val bvalid_0 = Bool(OUTPUT)
     //slave interface read address ports
-    val s_axi_arid = Bits(INPUT, 4)
-    val s_axi_araddr = Bits(INPUT, if (depth <= 0x40000000) 30 else 32)
-    val s_axi_arlen = Bits(INPUT, 8)
-    val s_axi_arsize = Bits(INPUT, 3)
-    val s_axi_arburst = Bits(INPUT, 2)
-    val s_axi_arlock = Bits(INPUT, 1)
-    val s_axi_arcache = Bits(INPUT, 4)
-    val s_axi_arprot = Bits(INPUT, 3)
-    val s_axi_arqos = Bits(INPUT, 4)
-    val s_axi_arvalid = Bool(INPUT)
-    val s_axi_arready = Bool(OUTPUT)
+    val arid_0 = Bits(INPUT, 8)
+    val araddr_0 = Bits(INPUT, 32)
+    val arlen_0 = Bits(INPUT, 8)
+    val arsize_0 = Bits(INPUT, 3)
+    val arburst_0 = Bits(INPUT, 2)
+    val arlock_0 = Bits(INPUT, 1)
+    // val arcache_0 = Bits(INPUT, 4)
+    // val arprot_0 = Bits(INPUT, 3)
+    // val arqos_0 = Bits(INPUT, 4)
+    val arvalid_0 = Bool(INPUT)
+    val arready_0 = Bool(OUTPUT)
     //slave interface read data ports
-    val s_axi_rready = Bool(INPUT)
-    val s_axi_rid = Bits(OUTPUT, 4)
-    val s_axi_rdata = Bits(OUTPUT, 64)
-    val s_axi_rresp = Bits(OUTPUT, 2)
-    val s_axi_rlast = Bool(OUTPUT)
-    val s_axi_rvalid = Bool(OUTPUT)
-    //misc
-    val device_temp = Bits(OUTPUT, 12)
+    val rready_0 = Bool(INPUT)
+    val rid_0 = Bits(OUTPUT, 8)
+    val rdata_0 = Bits(OUTPUT, 128)
+    val rresp_0 = Bits(OUTPUT, 2)
+    val rlast_0 = Bool(OUTPUT)
+    val rvalid_0 = Bool(OUTPUT)
   }
 
   ElaborationArtefacts.add(

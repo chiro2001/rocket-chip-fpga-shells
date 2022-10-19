@@ -1,11 +1,11 @@
 // See LICENSE file for license details.
 (* keep_hierarchy = "yes" *) module PowerOnResetFPGAOnly
-#(parameter N = 32;)(
+#(parameter N = 32)(
 input clock,
 (* dont_touch = "true" *) output power_on_reset
 );
 reg reset;
-reg [$clog(N):0] cnt;
+reg [$clog2(N):0] cnt;
 assign power_on_reset = reset;
 
 initial begin

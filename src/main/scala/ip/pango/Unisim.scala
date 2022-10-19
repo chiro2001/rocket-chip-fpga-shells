@@ -44,18 +44,18 @@ extends BlackBox(
   })
 }
 
-/** IBUFG -- Clock Input Buffer */
+/** GTP_INBUFG -- Clock Input Buffer */
 
-class IBUFG extends BlackBox {
+class GTP_INBUFG extends BlackBox {
   val io = IO(new Bundle {
     val O = Output(Clock())
     val I = Input(Clock())
   })
 }
 
-object IBUFG {
+object GTP_INBUFG {
   def apply (pin: Clock): Clock = {
-    val pad = Module (new IBUFG())
+    val pad = Module (new GTP_INBUFG())
     pad.io.I := pin
     pad.io.O
   }

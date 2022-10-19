@@ -14,32 +14,32 @@
 //////////////////////////////////////////////////////////////////////////////
 //               
 // Library:
-// Filename:pll.v                 
+// Filename:harnessSysPLL.v                 
 //////////////////////////////////////////////////////////////////////////////
 
-module pll (
+module harnessSysPLL (
     clkin1,
+    pll_rst,
     clkout0,
     clkout1,
-    clkout2,
     
     pll_lock
     );
 
     localparam real CLKIN_FREQ          = 50.0;
-    localparam integer STATIC_RATIOI    = 5;
-    localparam integer STATIC_RATIO0    = 130;
-    localparam integer STATIC_RATIO1    = 16;
-    localparam integer STATIC_RATIO2    = 33;
+    localparam integer STATIC_RATIOI    = 2;
+    localparam integer STATIC_RATIO0    = 75;
+    localparam integer STATIC_RATIO1    = 12;
+    localparam integer STATIC_RATIO2    = 12;
     localparam integer STATIC_RATIO3    = 16;
     localparam integer STATIC_RATIO4    = 16;
-    localparam integer STATIC_RATIOF    = 104;
-    localparam integer STATIC_DUTY0     = 130;
-    localparam integer STATIC_DUTY1     = 16;
-    localparam integer STATIC_DUTY2     = 33;
+    localparam integer STATIC_RATIOF    = 24;
+    localparam integer STATIC_DUTY0     = 75;
+    localparam integer STATIC_DUTY1     = 12;
+    localparam integer STATIC_DUTY2     = 12;
     localparam integer STATIC_DUTY3     = 16;
     localparam integer STATIC_DUTY4     = 16;
-    localparam integer STATIC_DUTYF     = 104;
+    localparam integer STATIC_DUTYF     = 24;
     localparam integer STATIC_PHASE0    = 16;
     localparam integer STATIC_PHASE1    = 16;
     localparam integer STATIC_PHASE2    = 16;
@@ -58,7 +58,7 @@ module pll (
     localparam CLKOUT4_GATE_EN          = "FALSE";
     localparam FBMODE                   = "FALSE";
     localparam integer FBDIV_SEL        = 0;
-    localparam BANDWIDTH                = "LOW";
+    localparam BANDWIDTH                = "OPTIMIZED";
     localparam PFDEN_EN                 = "FALSE";
     localparam VCOCLK_DIV2              = 1'b0;
     localparam DYNAMIC_RATIOI_EN        = "FALSE";
@@ -100,9 +100,9 @@ module pll (
     localparam SIM_DEVICE = "PGL22G";
 
     input clkin1;
+    input pll_rst;
     output clkout0;
     output clkout1;
-    output clkout2;
     
     output pll_lock;
 
@@ -163,8 +163,6 @@ module pll (
     assign clkin_sel_en = 1'b0;
     
     assign pll_pwd      = 1'b0;
-    
-    assign pll_rst      = 1'b0;
     
     assign rstodiv      = 1'b0;
 

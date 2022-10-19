@@ -258,7 +258,7 @@ class DDRPGL22GPlacedOverlay(val shell: PGL22GShellBasicOverlays, name: String, 
     ui.reset := !port.pll_lock
     port.pll_refclk_in := dclk1.clock.asUInt
     port.ddrc_rst := shell.pllReset
-    port.ddr_rstn_key := !ar.reset
+    port.top_rst_n := !ar.reset
   } }
 
   shell.sdc.addGroup(clocks = Seq("clk_pll_i"), pins = Seq(mig.island.module.blackbox.io.pll_aclk_0))

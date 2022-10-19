@@ -42,28 +42,23 @@ object PowerOnResetFPGAOnly {
 //IP : pango mmcm with "NO_BUFFER" input clock
 class PangoPLL(c : PLLParameters) extends BlackBox with PLLInstance {
   val io = new Bundle {
-    val clk_in1   = Clock(INPUT)
-    val clk_out1  = if (c.req.size >= 1) Some(Clock(OUTPUT)) else None
-    val clk_out2  = if (c.req.size >= 2) Some(Clock(OUTPUT)) else None
-    val clk_out3  = if (c.req.size >= 3) Some(Clock(OUTPUT)) else None
-    val clk_out4  = if (c.req.size >= 4) Some(Clock(OUTPUT)) else None
-    val clk_out5  = if (c.req.size >= 5) Some(Clock(OUTPUT)) else None
-    val clk_out6  = if (c.req.size >= 6) Some(Clock(OUTPUT)) else None
-    val clk_out7  = if (c.req.size >= 7) Some(Clock(OUTPUT)) else None
-    val reset     = Bool(INPUT)
-    val locked    = Bool(OUTPUT)
+    val clkin1   = Clock(INPUT)
+    val clkout0  = if (c.req.size >= 1) Some(Clock(OUTPUT)) else None
+    val clkout1  = if (c.req.size >= 2) Some(Clock(OUTPUT)) else None
+    val clkout2  = if (c.req.size >= 3) Some(Clock(OUTPUT)) else None
+    val clkout3  = if (c.req.size >= 4) Some(Clock(OUTPUT)) else None
+    val pll_rst     = Bool(INPUT)
+    val pll_lock    = Bool(OUTPUT)
   }
 
   val moduleName = c.name
   override def desiredName = c.name
 
-  def getClocks = Seq() ++ io.clk_out1 ++ io.clk_out2 ++
-    io.clk_out3 ++ io.clk_out4 ++
-    io.clk_out5 ++ io.clk_out6 ++
-    io.clk_out7
-  def getInput = io.clk_in1
-  def getReset = Some(io.reset)
-  def getLocked = io.locked
+  def getClocks = Seq() ++ io.clkout0 ++ io.clkout1 ++
+    io.clkout2 ++ io.clkout3
+  def getInput = io.clkin1
+  def getReset = Some(io.pll_rst)
+  def getLocked = io.pll_lock
   def getClockNames = Seq.tabulate (c.req.size) { i =>
     s"${c.name}/inst/pango_pll_inst/CLKOUT${i}"
   }
@@ -199,14 +194,3 @@ class sdio_spi_bridge() extends BlackBox
    See the License for the specific language governing permissions and
    limitations under the License.
 */
-
-
-class pll extends BlackBox {
-  val io = new Bundle {
-    val clkin1  = Input(Clock())
-    val clkout0 = Output(Clock())
-    val clkout1 = Output(Clock())
-    val clkout2 = Output(Clock())
-    val pll_lock   = Output(Bool())
-  }
-}
