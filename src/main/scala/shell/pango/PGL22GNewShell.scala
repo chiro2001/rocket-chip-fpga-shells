@@ -13,7 +13,7 @@ import sifive.fpgashells.shell._
 class SysClockPGL22GPlacedOverlay(val shell: PGL22GShellBasicOverlays, name: String, val designInput: ClockInputDesignInput, val shellInput: ClockInputShellInput)
   extends SingleEndedClockInputPangoPlacedOverlay(name, designInput, shellInput)
 {
-  val node = shell { ClockSourceNode(freqMHz = 100, jitterPS = 50) }
+  val node = shell { ClockSourceNode(freqMHz = 50, jitterPS = 50) }
 
   shell { InModuleBody {
     val clk: Clock = io
@@ -238,11 +238,11 @@ class DDRPGL22GPlacedOverlaySysClk(val shell: PGL22GShellBasicOverlays, name: St
   val mig = LazyModule(new PangoPGL22GMIG(migParams))
   val ioNode = BundleBridgeSource(() => mig.module.io.cloneType)
   val topIONode = shell { ioNode.makeSink() }
-  val ddrUI     = shell { ClockSourceNode(freqMHz = 100) }
+  val ddrUI     = shell { ClockSourceNode(freqMHz = 8) }
   val areset    = shell { ClockSinkNode(Seq(ClockSinkParameters())) }
   areset := di.wrangler := ddrUI
 
-  def overlayOutput = DDROverlayOutputSysClk(ddr = mig.node)
+  def overlayOutput = DDROverlayOutputSysClk(mig)
   def ioFactory = new PangoPGL22GMIGPads(size)
 
   InModuleBody { ioNode.bundle <> mig.module.io }

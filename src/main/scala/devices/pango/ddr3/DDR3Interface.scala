@@ -1,13 +1,14 @@
 package sifive.fpgashells.devices.pango.ddr3
 
 import Chisel._
-import chisel3.experimental.{Analog,attach}
+import chisel3.experimental.{Analog, attach}
 import freechips.rocketchip.amba.axi4._
 import freechips.rocketchip.config.Parameters
 import freechips.rocketchip.subsystem._
 import freechips.rocketchip.diplomacy._
 import freechips.rocketchip.tilelink._
 import freechips.rocketchip.interrupts._
+import sifive.fpgashells.clocks.PLLNode
 import sifive.fpgashells.ip.pango.ddr3.{PGL22GMIGIOClocksReset, PGL22GMIGIODDR, ddr3_core}
 
 case class PangoPGL22GMIGParams(
@@ -154,10 +155,15 @@ class PangoPGL22GMIG(c : PangoPGL22GMIGParams)(implicit p: Parameters) extends L
   val node: TLInwardNode =
     island.crossAXI4In(island.node) := yank.node := deint.node := indexer.node := toaxi4.node := buffer.node
 
+  val pllNode = PLLNode(feedback = false)
+  // for AXI
+
   lazy val module = new LazyModuleImp(this) {
     val io = IO(new Bundle {
       val port = new PangoPGL22GMIGIO(depth)
     })
+    // pllNode.in.head._1.clock := island.module.clock
+    pllNode.out.head._1.member.head.clock := island.module.io.port.pll_aclk_0
 
     io.port <> island.module.io.port
 

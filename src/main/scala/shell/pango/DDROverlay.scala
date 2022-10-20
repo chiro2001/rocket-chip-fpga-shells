@@ -5,6 +5,7 @@ import freechips.rocketchip.config._
 import freechips.rocketchip.diplomacy._
 import freechips.rocketchip.tilelink._
 import sifive.fpgashells.clocks._
+import sifive.fpgashells.devices.pango.ddr3.PangoPGL22GMIG
 import sifive.fpgashells.shell.{DesignPlacer, IOPlacedOverlay, ShellPlacer}
 
 
@@ -15,7 +16,7 @@ case class DDRDesignInputSysClk(
                                  clockSource: ClockSourceNode,
                                  vc7074gbdimm: Boolean = false)(
   implicit val p: Parameters)
-case class DDROverlayOutputSysClk(ddr: TLInwardNode)
+case class DDROverlayOutputSysClk(mig: PangoPGL22GMIG)
 trait DDRShellPlacerSysClk[Shell] extends ShellPlacer[DDRDesignInputSysClk, DDRShellInputSysClk, DDROverlayOutputSysClk]
 
 case object DDROverlayKeySysClk extends Field[Seq[DesignPlacer[DDRDesignInputSysClk, DDRShellInputSysClk, DDROverlayOutputSysClk]]](Nil)
