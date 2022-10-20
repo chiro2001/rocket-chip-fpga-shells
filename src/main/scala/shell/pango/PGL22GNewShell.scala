@@ -4,9 +4,10 @@ import chisel3._
 import chisel3.experimental.{Analog, IO, attach}
 import freechips.rocketchip.config._
 import freechips.rocketchip.diplomacy._
+import shell.pango.{DDRDesignInputSysClk, DDROverlayKeySysClk, DDROverlayOutputSysClk, DDRPlacedOverlaySysClk, DDRShellInputSysClk, DDRShellPlacerSysClk}
 import sifive.fpgashells.clocks._
 import sifive.fpgashells.devices.pango.ddr3.{PangoPGL22GMIG, PangoPGL22GMIGPads, PangoPGL22GMIGParams}
-import sifive.fpgashells.ip.pango.{PowerOnResetFPGAOnly, GTP_INBUF, GTP_IOBUF}
+import sifive.fpgashells.ip.pango.{GTP_INBUF, GTP_IOBUF, PowerOnResetFPGAOnly}
 import sifive.fpgashells.shell._
 
 class SysClockPGL22GPlacedOverlay(val shell: PGL22GShellBasicOverlays, name: String, val designInput: ClockInputDesignInput, val shellInput: ClockInputShellInput)
@@ -223,14 +224,15 @@ class JTAGDebugPGL22GShellPlacer(val shell: PGL22GShellBasicOverlays, val shellI
 // }
 
 case object PGL22GDDRSize extends Field[BigInt](0x10000000L / 2) // 128 MB
-class DDRPGL22GPlacedOverlay(val shell: PGL22GShellBasicOverlays, name: String, val designInput: DDRDesignInput, val shellInput: DDRShellInput)
-  extends DDRPlacedOverlay[PangoPGL22GMIGPads](name, designInput, shellInput)
+class DDRPGL22GPlacedOverlaySysClk(val shell: PGL22GShellBasicOverlays, name: String, val designInput: DDRDesignInputSysClk, val shellInput: DDRShellInputSysClk)
+  extends DDRPlacedOverlaySysClk
+    [PangoPGL22GMIGPads](name, designInput, shellInput)
 {
   val size = p(PGL22GDDRSize)
 
-  val ddrClk1 = shell { ClockSinkNode(freqMHz = 50)}
-  val ddrGroup = shell { ClockGroup() }
-  ddrClk1 := di.wrangler := ddrGroup := di.corePLL
+  // val ddrClk1 = shell { ClockSinkNode(freqMHz = 50)}
+  // val ddrGroup = shell { ClockGroup() }
+  // ddrClk1 := di.wrangler := ddrGroup := di.clockSource
 
   val migParams = PangoPGL22GMIGParams(address = AddressSet.misaligned(di.baseAddress, size))
   val mig = LazyModule(new PangoPGL22GMIG(migParams))
@@ -240,7 +242,7 @@ class DDRPGL22GPlacedOverlay(val shell: PGL22GShellBasicOverlays, name: String, 
   val areset    = shell { ClockSinkNode(Seq(ClockSinkParameters())) }
   areset := di.wrangler := ddrUI
 
-  def overlayOutput = DDROverlayOutput(ddr = mig.node)
+  def overlayOutput = DDROverlayOutputSysClk(ddr = mig.node)
   def ioFactory = new PangoPGL22GMIGPads(size)
 
   InModuleBody { ioNode.bundle <> mig.module.io }
@@ -249,7 +251,12 @@ class DDRPGL22GPlacedOverlay(val shell: PGL22GShellBasicOverlays, name: String, 
     require (shell.sys_clock.get.isDefined, "Use of DDRPGL22GPlacedOverlay depends on SysClockPGL22GPlacedOverlay")
     val (sys, _) = shell.sys_clock.get.get.overlayOutput.node.out(0)
     val (ui, _) = ddrUI.out(0)
-    val (dclk1, _) = ddrClk1.in(0)
+    // val (dclk1, _) = ddrClk1.in(0)
+    // println(di.clockSource)
+    // println(di.clockSource.out)
+    // println(di.clockSource.in)
+    // println(di.clockSource.in.head)
+    val (dclk1, _) = di.clockSource.out.head
     val (ar, _) = areset.in(0)
     val port = topIONode.bundle.port
 
@@ -263,9 +270,9 @@ class DDRPGL22GPlacedOverlay(val shell: PGL22GShellBasicOverlays, name: String, 
 
   shell.sdc.addGroup(clocks = Seq("clk_pll_i"), pins = Seq(mig.island.module.blackbox.io.pll_aclk_0))
 }
-class DDRPGL22GShellPlacer(val shell: PGL22GShellBasicOverlays, val shellInput: DDRShellInput)(implicit val valName: ValName)
-  extends DDRShellPlacer[PGL22GShellBasicOverlays] {
-  def place(designInput: DDRDesignInput) = new DDRPGL22GPlacedOverlay(shell, valName.name, designInput, shellInput)
+class DDRPGL22GShellPlacer(val shell: PGL22GShellBasicOverlays, val shellInput: DDRShellInputSysClk)(implicit val valName: ValName)
+  extends DDRShellPlacerSysClk[PGL22GShellBasicOverlays] {
+  def place(designInput: DDRDesignInputSysClk) = new DDRPGL22GPlacedOverlaySysClk(shell, valName.name, designInput, shellInput)
 }
 
 //Core to shell external resets
@@ -323,7 +330,7 @@ abstract class PGL22GShellBasicOverlays()(implicit p: Parameters) extends PangoP
   // val led       = Seq.tabulate(16)(i => Overlay(LEDOverlayKey, new LEDPGL22GShellPlacer(this, LEDMetas(i))(valName = ValName(s"led_$i"))))
   // val switch    = Seq.tabulate(4)(i => Overlay(SwitchOverlayKey, new SwitchPGL22GShellPlacer(this, SwitchShellInput(number = i))(valName = ValName(s"switch_$i"))))
   // val button    = Seq.tabulate(4)(i => Overlay(ButtonOverlayKey, new ButtonPGL22GShellPlacer(this, ButtonShellInput(number = i))(valName = ValName(s"button_$i"))))
-  val ddr       = Overlay(DDROverlayKey, new DDRPGL22GShellPlacer(this, DDRShellInput()))
+  val ddr       = Overlay(DDROverlayKeySysClk, new DDRPGL22GShellPlacer(this, DDRShellInputSysClk()))
   val uart      = Overlay(UARTOverlayKey, new UARTPGL22GShellPlacer(this, UARTShellInput()))
   // val sdio      = Overlay(SPIOverlayKey, new SDIOPGL22GShellPlacer(this, SPIShellInput()))
   // val jtag      = Overlay(JTAGDebugOverlayKey, new JTAGDebugPGL22GShellPlacer(this, JTAGDebugShellInput()))
