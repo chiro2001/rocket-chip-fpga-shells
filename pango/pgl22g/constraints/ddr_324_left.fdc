@@ -235,7 +235,7 @@ define_attribute {p:ddr_pad_loop_in_h} {PAP_IO_STANDARD} {SSTL15_I}
 define_attribute {p:ddr_pad_loop_in_h} {PAP_IO_UNUSED} {TRUE}                   
 define_attribute {p:ddr_pad_loop_in_h} {PAP_IO_VREF_MODE} {IN}                  
 define_attribute {p:ddr_pad_loop_in_h} {PAP_IO_VREF_MODE_VALUE} {0.5}           
-define_attribute {p:ddr_pad_loop_in_h} {PAP_IO_DDR_TERM_MODE} {ON}              
+define_attribute {p:ddr_pad_loop_in_h} {PAP_IO_DDR_TERM_MODE} {ON}      
 define_attribute {p:ddr_pad_addr_ch0[0]} {PAP_IO_DIRECTION} {Output}            
 define_attribute {p:ddr_pad_addr_ch0[0]} {PAP_IO_LOC} {M4}                     
 define_attribute {p:ddr_pad_addr_ch0[0]} {PAP_IO_VCCIO} {1.5}                   
