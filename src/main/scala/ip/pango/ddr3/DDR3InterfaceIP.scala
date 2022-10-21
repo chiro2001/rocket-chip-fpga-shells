@@ -1,8 +1,8 @@
 package sifive.fpgashells.ip.pango.ddr3
 
-import Chisel._
-import chisel3.experimental.{Analog,attach}
-import freechips.rocketchip.util.{ElaborationArtefacts}
+import Chisel.{Bits, _}
+import chisel3.experimental.{Analog, attach}
+import freechips.rocketchip.util.ElaborationArtefacts
 import freechips.rocketchip.util.GenericParameterizedBundle
 import freechips.rocketchip.config._
 
@@ -86,8 +86,7 @@ import freechips.rocketchip.config._
 );
  */
 
-class PGL22GMIGIODDR(depth : BigInt) extends GenericParameterizedBundle(depth) {
-  // require((depth<=0x80000000L),"PGL22GMIGIODDR supports upto 2GB depth configuraton")
+trait PGL22GMIGIODDRBaseTraitInOut extends Bundle {
   val pad_addr_ch0 = Bits(OUTPUT, 16)
   val pad_ba_ch0 = Bits(OUTPUT, 3)
   val pad_rasn_ch0 = Bool(OUTPUT)
@@ -109,6 +108,38 @@ class PGL22GMIGIODDR(depth : BigInt) extends GenericParameterizedBundle(depth) {
   val pad_loop_in_h = Bool(INPUT)
   val pad_loop_out = Bool(OUTPUT)
   val pad_loop_out_h = Bool(OUTPUT)
+}
+
+trait PGL22GMIGIODDRBaseTrait extends Bundle {
+  val pad_addr_ch0 = Bits(OUTPUT, 16)
+  val pad_ba_ch0 = Bits(OUTPUT, 3)
+  val pad_rasn_ch0 = Bool(OUTPUT)
+  val pad_casn_ch0 = Bool(OUTPUT)
+  val pad_wen_ch0 = Bool(OUTPUT)
+  val pad_rstn_ch0 = Bool(OUTPUT)
+  val pad_ddr_clk_w = Bits(OUTPUT, 1)
+  val pad_ddr_clkn_w = Bits(OUTPUT, 1)
+  val pad_cke_ch0 = Bits(OUTPUT, 1)
+  val pad_csn_ch0 = Bits(OUTPUT, 1)
+  val pad_dm_rdqs_ch0 = Bits(OUTPUT, 2)
+  val pad_odt_ch0 = Bits(OUTPUT, 1)
+  val pad_dq_ch0 = Bits(INPUT, 16)
+  val pad_dqsn_ch0 = Bits(INPUT, 2)
+  val pad_dqs_ch0 = Bits(INPUT, 2)
+
+  // ?
+  val pad_loop_in = Bool(INPUT)
+  val pad_loop_in_h = Bool(INPUT)
+  val pad_loop_out = Bool(OUTPUT)
+  val pad_loop_out_h = Bool(OUTPUT)
+}
+
+class PGL22GMIGIODDRBase extends PGL22GMIGIODDRBaseTrait
+
+class PGL22GMIGIODDR(depth: BigInt = BigInt(0x80000000L))
+  extends GenericParameterizedBundle(depth)
+  with PGL22GMIGIODDRBaseTraitInOut {
+  // require((depth<=0x80000000L),"PGL22GMIGIODDR supports upto 2GB depth configuraton")
 }
 
 //reused directly in io bundle for sifive.blocks.devices.xilinxhmemc
@@ -143,51 +174,53 @@ trait PGL22GMIGIOClocksReset extends Bundle {
 
 class PGL22GMIGIOClocksResetBundle extends PGL22GMIGIOClocksReset
 
+class PGL22GMIGIODDRIO(depth: BigInt = BigInt(0x80000000L)) extends PGL22GMIGIODDR(depth) with PGL22GMIGIOClocksReset {
+  //axi_s
+  //slave interface write address ports
+  val awid_0 = Bits(INPUT, 8)
+  val awaddr_0 = Bits(INPUT, 32)
+  val awlen_0 = Bits(INPUT, 8)
+  val awsize_0 = Bits(INPUT, 3)
+  val awburst_0 = Bits(INPUT, 2)
+  val awlock_0 = Bits(INPUT, 1)
+  val awvalid_0 = Bool(INPUT)
+  val awready_0 = Bool(OUTPUT)
+  //slave interface write data ports
+  val wdata_0 = Bits(INPUT, 128)
+  val wstrb_0 = Bits(INPUT, 16)
+  val wlast_0 = Bool(INPUT)
+  val wvalid_0 = Bool(INPUT)
+  val wready_0 = Bool(OUTPUT)
+  //slave interface write response ports
+  val bready_0 = Bool(INPUT)
+  val bid_0 = Bits(OUTPUT, 8)
+  val bresp_0 = Bits(OUTPUT, 2)
+  val bvalid_0 = Bool(OUTPUT)
+  //slave interface read address ports
+  val arid_0 = Bits(INPUT, 8)
+  val araddr_0 = Bits(INPUT, 32)
+  val arlen_0 = Bits(INPUT, 8)
+  val arsize_0 = Bits(INPUT, 3)
+  val arburst_0 = Bits(INPUT, 2)
+  val arlock_0 = Bits(INPUT, 1)
+  val arvalid_0 = Bool(INPUT)
+  val arready_0 = Bool(OUTPUT)
+  //slave interface read data ports
+  val rready_0 = Bool(INPUT)
+  val rid_0 = Bits(OUTPUT, 8)
+  val rdata_0 = Bits(OUTPUT, 128)
+  val rresp_0 = Bits(OUTPUT, 2)
+  val rlast_0 = Bool(OUTPUT)
+  val rvalid_0 = Bool(OUTPUT)
+}
+
 //scalastyle:off
 //turn off linter: blackbox name must match verilog module
 class ddr3_core(depth : BigInt) extends BlackBox
 {
   require((depth<=0x80000000L),"ddr3_core supports upto 2GB depth configuraton")
 
-  val io = new PGL22GMIGIODDR(depth) with PGL22GMIGIOClocksReset {
-    //axi_s
-    //slave interface write address ports
-    val awid_0 = Bits(INPUT, 8)
-    val awaddr_0 = Bits(INPUT, 32)
-    val awlen_0 = Bits(INPUT, 8)
-    val awsize_0 = Bits(INPUT, 3)
-    val awburst_0 = Bits(INPUT, 2)
-    val awlock_0 = Bits(INPUT, 1)
-    val awvalid_0 = Bool(INPUT)
-    val awready_0 = Bool(OUTPUT)
-    //slave interface write data ports
-    val wdata_0 = Bits(INPUT, 128)
-    val wstrb_0 = Bits(INPUT, 16)
-    val wlast_0 = Bool(INPUT)
-    val wvalid_0 = Bool(INPUT)
-    val wready_0 = Bool(OUTPUT)
-    //slave interface write response ports
-    val bready_0 = Bool(INPUT)
-    val bid_0 = Bits(OUTPUT, 8)
-    val bresp_0 = Bits(OUTPUT, 2)
-    val bvalid_0 = Bool(OUTPUT)
-    //slave interface read address ports
-    val arid_0 = Bits(INPUT, 8)
-    val araddr_0 = Bits(INPUT, 32)
-    val arlen_0 = Bits(INPUT, 8)
-    val arsize_0 = Bits(INPUT, 3)
-    val arburst_0 = Bits(INPUT, 2)
-    val arlock_0 = Bits(INPUT, 1)
-    val arvalid_0 = Bool(INPUT)
-    val arready_0 = Bool(OUTPUT)
-    //slave interface read data ports
-    val rready_0 = Bool(INPUT)
-    val rid_0 = Bits(OUTPUT, 8)
-    val rdata_0 = Bits(OUTPUT, 128)
-    val rresp_0 = Bits(OUTPUT, 2)
-    val rlast_0 = Bool(OUTPUT)
-    val rvalid_0 = Bool(OUTPUT)
-  }
+  val io = new PGL22GMIGIODDRIO(depth)
 }
 //scalastyle:on
 
