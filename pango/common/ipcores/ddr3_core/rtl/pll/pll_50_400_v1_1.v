@@ -34,17 +34,17 @@ module pll_50_400_v1_1 (
     
     localparam integer STATIC_RATIOI    = 2;
     
-    localparam integer STATIC_RATIO0    = 3;
+    localparam integer STATIC_RATIO0    = 2;
     
-    localparam integer STATIC_RATIO1    = 24;
+    localparam integer STATIC_RATIO1    = 16;
     
-    localparam integer STATIC_RATIO2    = 100;
+    localparam integer STATIC_RATIO2    = 160;
     
-    localparam integer STATIC_RATIO3    = 12;
+    localparam integer STATIC_RATIO3    = 8;
     
-    localparam integer STATIC_RATIO4    = 12;
+    localparam integer STATIC_RATIO4    = 8;
     
-    localparam integer STATIC_RATIOF    = 48;
+    localparam integer STATIC_RATIOF    = 32;
    
 
     localparam integer STATIC_DUTY0     = STATIC_RATIO0;
