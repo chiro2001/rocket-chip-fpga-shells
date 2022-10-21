@@ -114,7 +114,7 @@ class PGL22GMIGIODDR(depth : BigInt) extends GenericParameterizedBundle(depth) {
 //reused directly in io bundle for sifive.blocks.devices.xilinxhmemc
 trait PGL22GMIGIOClocksReset extends Bundle {
   // 外部参考时钟输入
-  val pll_refclk_in = Bool(INPUT)
+  val pll_refclk_in = Clock(INPUT)
   // 外部复位输入
   val top_rst_n = Bool(INPUT)
   // DDRC 的复位输入
