@@ -125,7 +125,8 @@ trait PGL22GMIGIODDRBaseTrait extends Bundle {
   val pad_odt_ch0 = Bits(OUTPUT, 1)
   val pad_dq_ch0 = Bits(INPUT, 16)
   val pad_dqsn_ch0 = Bits(INPUT, 2)
-  val pad_dqs_ch0 = Bits(INPUT, 2)
+  // val pad_dqs_ch0 = Bits(INPUT, 2)
+  val pad_dqs_ch0 = Analog(2.W)
 
   // ?
   val pad_loop_in = Bool(INPUT)
@@ -134,7 +135,7 @@ trait PGL22GMIGIODDRBaseTrait extends Bundle {
   val pad_loop_out_h = Bool(OUTPUT)
 }
 
-class PGL22GMIGIODDRBase extends PGL22GMIGIODDRBaseTrait
+class PGL22GMIGIODDRBase extends PGL22GMIGIODDRBaseTraitInOut
 
 class PGL22GMIGIODDR(depth: BigInt = BigInt(0x80000000L))
   extends GenericParameterizedBundle(depth)
