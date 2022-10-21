@@ -110,31 +110,6 @@ trait PGL22GMIGIODDRBaseTraitInOut extends Bundle {
   val pad_loop_out_h = Bool(OUTPUT)
 }
 
-trait PGL22GMIGIODDRBaseTrait extends Bundle {
-  val pad_addr_ch0 = Bits(OUTPUT, 16)
-  val pad_ba_ch0 = Bits(OUTPUT, 3)
-  val pad_rasn_ch0 = Bool(OUTPUT)
-  val pad_casn_ch0 = Bool(OUTPUT)
-  val pad_wen_ch0 = Bool(OUTPUT)
-  val pad_rstn_ch0 = Bool(OUTPUT)
-  val pad_ddr_clk_w = Bits(OUTPUT, 1)
-  val pad_ddr_clkn_w = Bits(OUTPUT, 1)
-  val pad_cke_ch0 = Bits(OUTPUT, 1)
-  val pad_csn_ch0 = Bits(OUTPUT, 1)
-  val pad_dm_rdqs_ch0 = Bits(OUTPUT, 2)
-  val pad_odt_ch0 = Bits(OUTPUT, 1)
-  val pad_dq_ch0 = Bits(INPUT, 16)
-  val pad_dqsn_ch0 = Bits(INPUT, 2)
-  // val pad_dqs_ch0 = Bits(INPUT, 2)
-  val pad_dqs_ch0 = Analog(2.W)
-
-  // ?
-  val pad_loop_in = Bool(INPUT)
-  val pad_loop_in_h = Bool(INPUT)
-  val pad_loop_out = Bool(OUTPUT)
-  val pad_loop_out_h = Bool(OUTPUT)
-}
-
 class PGL22GMIGIODDRBase extends PGL22GMIGIODDRBaseTraitInOut
 
 class PGL22GMIGIODDR(depth: BigInt = BigInt(0x80000000L))
