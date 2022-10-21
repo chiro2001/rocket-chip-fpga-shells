@@ -1,4 +1,4 @@
-// Created by IP Generator (Version 2020.3 build 62942)
+// Created by IP Generator (Version 2021.1-SP7.3 build 94852)
 
 
 //////////////////////////////////////////////////////////////////////////////
@@ -94,7 +94,7 @@ end
 
 generate
 if ((DDR_TYPE == "DDR3")&&(DATA_WIDTH == "16BIT")) begin
-ddr3 mem_core (
+ddr3     mem_core (
 
     .rst_n                           (pad_rstn_ch0  ),
     .ck                              (pad_ddr_clk_w_dly  ),
@@ -117,7 +117,7 @@ ddr3 mem_core (
 );
 end
 else if ((DDR_TYPE == "DDR3")&&(DATA_WIDTH == "8BIT")) begin
-ddr3_core     mem_core (
+ddr3     mem_core (
 
     .rst_n                           (pad_rstn_ch0  ),
     .ck                              (pad_ddr_clk_w_dly  ),

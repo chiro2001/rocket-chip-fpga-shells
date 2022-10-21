@@ -1,4 +1,4 @@
-// Created by IP Generator (Version 2020.3 build 62942)
+// Created by IP Generator (Version 2021.1-SP7.3 build 94852)
 
 
     
@@ -38,7 +38,7 @@ module pll_50_400_v1_1 (
     
     localparam integer STATIC_RATIO1    = 16;
     
-    localparam integer STATIC_RATIO2    = 8;
+    localparam integer STATIC_RATIO2    = 100;
     
     localparam integer STATIC_RATIO3    = 8;
     

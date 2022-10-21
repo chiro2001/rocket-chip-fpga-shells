@@ -7,7 +7,7 @@ if {[file exists work]} {
   vlib	work                                                                                                      
   vmap	work work                                                                                                 
                                                                                                                    
-set LIB_DIR  C:/pango/PDS_2020.3/ip/system_ip/ipsl_hmic_h/ipsl_hmic_h_eval/ipsl_hmic_h/../../../../../arch/vendor/pango/verilog/simulation
+set LIB_DIR  /opt/pds/pango/PDS_2020.2/ip/system_ip/ipsl_hmic_h/ipsl_hmic_h_eval/ipsl_hmic_h/../../../../../arch/vendor/pango/verilog/simulation
                                                                                                                    
 vlib work                                                                                                          
 vlog -sv -work work -mfcu -incr -f ../sim/sim_file_list.f -y $LIB_DIR +libext+.v +incdir+../example_design/bench/mem/ 

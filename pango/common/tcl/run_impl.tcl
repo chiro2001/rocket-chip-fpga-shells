@@ -1,6 +1,5 @@
-source run_synth.tcl
+source run_map.tcl
 
-dev_map 
 pnr 
 # pnr -gplace_times 16 -mode fast -parallel 16 
 if {$generate_timng_report != ""} {

@@ -1,4 +1,4 @@
--- Created by IP Generator (Version 2020.3 build 62942)
+-- Created by IP Generator (Version 2021.1-SP7.3 build 94852)
 -- Instantiation Template
 --
 -- Insert the following codes into your VHDL file.
