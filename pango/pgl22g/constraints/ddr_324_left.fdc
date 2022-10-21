@@ -13,7 +13,8 @@ create_clock -name {sys_clock} {p:sys_clock} -period {20} -waveform {0 10}
 ###==== END "Delay Paths"
 
 ###==== BEGIN Logical
-define_attribute {i:mig.island.blackbox.u_pll_50_400.u_pll_e1} {PAP_LOC} {PLL_82_71}
+#define_attribute {i:mig.island.blackbox.u_pll_50_400.u_pll_e1} {PAP_LOC} {PLL_82_71}
+define_attribute {i:DDR3Mem.ddr3_core_inst.u_pll_50_400.u_pll_e1} {PAP_LOC} {PLL_82_71}
 ###==== END Logical
 
 ###==== BEGIN Io Table
