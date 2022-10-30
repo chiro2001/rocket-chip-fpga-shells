@@ -1,11 +1,18 @@
 package sifive.fpgashells.shell.pango
 
 import chisel3._
+import chisel3.experimental.Analog
 import chisel3.util.Cat
 import freechips.rocketchip.diplomacy._
 import sifive.fpgashells.shell._
 import sifive.fpgashells.ip.xilinx._
 import sifive.fpgashells.shell.pango.PangoShell
+
+class SPIFlashIO extends Bundle {
+  val sck = Output(Bool())
+  val cs = Output(Bool())
+  val dq = Vec(4, Analog(1.W))
+}
 
 abstract class SPIFlashPangoPlacedOverlay(name: String, di: SPIFlashDesignInput, si: SPIFlashShellInput)
   extends SPIFlashPlacedOverlay(name, di, si) {
