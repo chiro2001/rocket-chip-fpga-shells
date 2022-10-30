@@ -29,3 +29,9 @@ define_attribute {p:jtag_TMS} {PAP_IO_DIRECTION} {INPUT}
 define_attribute {p:jtag_TMS} {PAP_IO_LOC} {M17}
 define_attribute {p:jtag_TMS} {PAP_IO_VCCIO} {3.3}
 define_attribute {p:jtag_TMS} {PAP_IO_STANDARD} {LVCMOS33}
+define_attribute {p:jtag_TDO} {PAP_IO_DIRECTION} {OUTPUT}
+define_attribute {p:jtag_TDO} {PAP_IO_LOC} {M16}
+define_attribute {p:jtag_TDO} {PAP_IO_VCCIO} {3.3}
+define_attribute {p:jtag_TDO} {PAP_IO_STANDARD} {LVCMOS33}
+define_attribute {p:jtag_TDO} {PAP_IO_DRIVE} {4}
+define_attribute {p:jtag_TDO} {PAP_IO_SLEW} {SLOW}
