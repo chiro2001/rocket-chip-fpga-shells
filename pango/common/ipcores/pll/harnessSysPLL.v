@@ -28,13 +28,13 @@ module harnessSysPLL (
 
     localparam real CLKIN_FREQ          = 50.0;
     localparam integer STATIC_RATIOI    = 2;
-    localparam integer STATIC_RATIO0    = 75;
+    localparam integer STATIC_RATIO0    = 120;
     localparam integer STATIC_RATIO1    = 12;
     localparam integer STATIC_RATIO2    = 12;
     localparam integer STATIC_RATIO3    = 16;
     localparam integer STATIC_RATIO4    = 16;
     localparam integer STATIC_RATIOF    = 24;
-    localparam integer STATIC_DUTY0     = 75;
+    localparam integer STATIC_DUTY0     = 120;
     localparam integer STATIC_DUTY1     = 12;
     localparam integer STATIC_DUTY2     = 12;
     localparam integer STATIC_DUTY3     = 16;
