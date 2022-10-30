@@ -8,7 +8,7 @@ import sifive.fpgashells.clocks._
 import sifive.fpgashells.ip.pango._
 import sifive.fpgashells.shell._
 
-class XDC(val name: String)
+class FDC(val name: String)
 {
   private var constraints: Seq[() => String] = Nil
   protected def addConstraint(command: => String) { constraints = (() => command) +: constraints }
@@ -53,7 +53,7 @@ class XDC(val name: String)
 abstract class PangoShell()(implicit p: Parameters) extends IOShell
 {
   val sdc = new SDC("shell.sdc")
-  val xdc = new XDC("shell.xdc")
+  val fdc = new FDC("shell.xdc")
   def pllReset: ModuleValue[Bool]
 
   ElaborationArtefacts.add("shell.vivado.tcl",

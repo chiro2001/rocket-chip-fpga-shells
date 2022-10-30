@@ -40,8 +40,8 @@ foreach {f} $ipcores {
 # foreach {f} $constraints {
 #   add_constraint $f
 # }
-set constraints [ glob ${fpga_dir}/${device_name}/constraints/*.fdc ]
-foreach {f} $constraints {
+set constraints_files [ glob ${fpga_dir}/${device_name}/constraints/$constraints/*.fdc ]
+foreach {f} $constraints_files {
   add_constraint $f
 }
 

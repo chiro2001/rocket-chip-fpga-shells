@@ -43,9 +43,9 @@ abstract class ChipLinkPangoPlacedOverlay(name: String, di: ChipLinkDesignInput,
     rx.clock := ibufg.io.O
     rx.reset := shell.pllReset
 
-    IOPin.of(io).foreach { shell.xdc.addIOStandard(_, "LVCMOS18") }
-    IOPin.of(io).filterNot(_.element eq io.b2c.clk).foreach { shell.xdc.addIOB(_) }
-    IOPin.of(io).filter(_.isOutput).foreach { shell.xdc.addSlew(_, "FAST") }
+    IOPin.of(io).foreach { shell.fdc.addIOStandard(_, "LVCMOS18") }
+    IOPin.of(io).filterNot(_.element eq io.b2c.clk).foreach { shell.fdc.addIOB(_) }
+    IOPin.of(io).filter(_.isOutput).foreach { shell.fdc.addSlew(_, "FAST") }
 
     val timing = IOTiming(
       /* The data signals coming from Aloe have: clock - 1.2 <= transition <= clock + 0.8

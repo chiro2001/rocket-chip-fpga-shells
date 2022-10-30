@@ -17,8 +17,8 @@ class SysClockPGL22GPlacedOverlay(val shell: PGL22GShellBasicOverlays, name: Str
 
   shell { InModuleBody {
     val clk: Clock = io
-    shell.xdc.addPackagePin(clk, "E3")
-    shell.xdc.addIOStandard(clk, "LVCMOS33")
+    shell.fdc.addPackagePin(clk, "E3")
+    shell.fdc.addIOStandard(clk, "LVCMOS33")
   } }
 }
 class SysClockPGL22GShellPlacer(val shell: PGL22GShellBasicOverlays, val shellInput: ClockInputShellInput)(implicit val valName: ValName)
@@ -39,12 +39,12 @@ class SDIOPGL22GPlacedOverlay(val shell: PGL22GShellBasicOverlays, name: String,
       ("G13", IOPin(io.spi_dat(3))))
 
     packagePinsWithPackageIOs foreach { case (pin, io) => {
-      shell.xdc.addPackagePin(io, pin)
-      shell.xdc.addIOStandard(io, "LVCMOS33")
-      shell.xdc.addIOB(io)
+      shell.fdc.addPackagePin(io, pin)
+      shell.fdc.addIOStandard(io, "LVCMOS33")
+      shell.fdc.addIOB(io)
     } }
     packagePinsWithPackageIOs drop 1 foreach { case (pin, io) => {
-      shell.xdc.addPullup(io)
+      shell.fdc.addPullup(io)
     } }
   } }
 }
@@ -66,11 +66,11 @@ class SPIFlashPGL22GPlacedOverlay(val shell: PGL22GShellBasicOverlays, name: Str
       ("M14", IOPin(io.qspi_dq(3))))
 
     packagePinsWithPackageIOs foreach { case (pin, io) => {
-      shell.xdc.addPackagePin(io, pin)
-      shell.xdc.addIOStandard(io, "LVCMOS33")
+      shell.fdc.addPackagePin(io, pin)
+      shell.fdc.addIOStandard(io, "LVCMOS33")
     } }
     packagePinsWithPackageIOs drop 1 foreach { case (pin, io) => {
-      shell.xdc.addPullup(io)
+      shell.fdc.addPullup(io)
     } }
   } }
 }
@@ -121,9 +121,9 @@ class UARTPGL22GPlacedOverlay(val shell: PGL22GShellBasicOverlays, name: String,
       ("D10", IOPin(io.txd)))
 
     packagePinsWithPackageIOs foreach { case (pin, io) => {
-      shell.xdc.addPackagePin(io, pin)
-      shell.xdc.addIOStandard(io, "LVCMOS33")
-      shell.xdc.addIOB(io)
+      shell.fdc.addPackagePin(io, pin)
+      shell.fdc.addIOStandard(io, "LVCMOS33")
+      shell.fdc.addIOB(io)
     } }
   } }
 }
@@ -179,7 +179,7 @@ class JTAGDebugPGL22GPlacedOverlay(val shell: PGL22GShellBasicOverlays, name: St
   shell { InModuleBody {
     shell.sdc.addClock("JTCK", IOPin(io.jtag_TCK), 10)
     shell.sdc.addGroup(clocks = Seq("JTCK"))
-    shell.xdc.clockDedicatedRouteFalse(IOPin(io.jtag_TCK))
+    shell.fdc.clockDedicatedRouteFalse(IOPin(io.jtag_TCK))
     val packagePinsWithPackageIOs = Seq(("F4", IOPin(io.jtag_TCK)),  //pin JD-3
       ("D2", IOPin(io.jtag_TMS)),  //pin JD-8
       ("E2", IOPin(io.jtag_TDI)),  //pin JD-7
@@ -187,9 +187,9 @@ class JTAGDebugPGL22GPlacedOverlay(val shell: PGL22GShellBasicOverlays, name: St
       ("H2", IOPin(io.srst_n)))
 
     packagePinsWithPackageIOs foreach { case (pin, io) => {
-      shell.xdc.addPackagePin(io, pin)
-      shell.xdc.addIOStandard(io, "LVCMOS33")
-      shell.xdc.addPullup(io)
+      shell.fdc.addPackagePin(io, pin)
+      shell.fdc.addIOStandard(io, "LVCMOS33")
+      shell.fdc.addPullup(io)
     } }
   } }
 }
@@ -289,10 +289,10 @@ class ChipLinkPGL22GPlacedOverlay(val shell: PGL22GShellBasicOverlays, name: Str
     val ereset_n = IO(Analog(1.W))
     ereset_n.suggestName("ereset_n")
     val pin = IOPin(ereset_n, 0)
-    shell.xdc.addPackagePin(pin, "BC8")
-    shell.xdc.addIOStandard(pin, "LVCMOS18")
-    shell.xdc.addTermination(pin, "NONE")
-    shell.xdc.addPullup(pin)
+    shell.fdc.addPackagePin(pin, "BC8")
+    shell.fdc.addIOStandard(pin, "LVCMOS18")
+    shell.fdc.addTermination(pin, "NONE")
+    shell.fdc.addPullup(pin)
 
     val iobuf = Module(new GTP_IOBUF)
     iobuf.suggestName("chiplink_ereset_iobuf")
@@ -314,8 +314,8 @@ class ChipLinkPGL22GPlacedOverlay(val shell: PGL22GShellBasicOverlays, name: Str
       "AU11", "AV11", "AW13", "AY13", "AN16", "AP16", "AP13", "AR13",
       "AT12", "AU12", "AK15", "AL15", "AL14", "AM14", "AV10", "AW10",
       "AN15", "AP15", "AK12", "AL12", "AM13", "AM12", "AJ13", "AJ12")
-    (IOPin.of(io.b2c) zip dir1) foreach { case (io, pin) => shell.xdc.addPackagePin(io, pin) }
-    (IOPin.of(io.c2b) zip dir2) foreach { case (io, pin) => shell.xdc.addPackagePin(io, pin) }
+    (IOPin.of(io.b2c) zip dir1) foreach { case (io, pin) => shell.fdc.addPackagePin(io, pin) }
+    (IOPin.of(io.c2b) zip dir2) foreach { case (io, pin) => shell.fdc.addPackagePin(io, pin) }
   } }
 }
 class ChipLinkPGL22GShellPlacer(shell: PGL22GShellBasicOverlays, val shellInput: ChipLinkShellInput)(implicit val valName: ValName)
@@ -355,7 +355,7 @@ class PGL22GShell()(implicit p: Parameters) extends PGL22GShellBasicOverlays {
 
   override lazy val module = new LazyRawModuleImp(this) {
     val reset = IO(Input(Bool()))
-    xdc.addBoardPin(reset, "reset")
+    fdc.addBoardPin(reset, "reset")
 
     val reset_ibuf = Module(new GTP_INBUF)
     reset_ibuf.io.I := reset
@@ -386,7 +386,7 @@ class PGL22GShellGPIOPMOD()(implicit p: Parameters) extends PGL22GShellBasicOver
 
   override lazy val module = new LazyRawModuleImp(this) {
     val reset = IO(Input(Bool()))
-    xdc.addBoardPin(reset, "reset")
+    fdc.addBoardPin(reset, "reset")
 
     val reset_ibuf = Module(new GTP_INBUF)
     reset_ibuf.io.I := reset

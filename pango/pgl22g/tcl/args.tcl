@@ -3,13 +3,15 @@ set top %top%
 set generate_timng_report ""
 set long_name %long_name%
 set fpga_dir %fpga_dir%
+set vsrc_mem %vsrc_mem%
+set constraints %constraints%
 
 set project_name $top
 
 set top_file ${long_name}.top.v
 set top_sim_file no_file.v
 set source_files [list \
-  ${fpga_dir}/common/vsrc/mem.v \
+  ${fpga_dir}/common/vsrc/$vsrc_mem \
   ${fpga_dir}/common/vsrc/mem_split.v \
   ${fpga_dir}/common/vsrc/PowerOnResetFPGAOnly.v]
 
