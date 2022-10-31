@@ -4,7 +4,6 @@ create_clock -name {sys_clock} [get_ports {sys_clock}] -period {20} -waveform {0
 
 ###==== BEGIN "Generated Clocks"
 create_generated_clock -name {core_clk}  -source {p:sys_clock} [get_pins {harnessSysPLL/u_pll_e1.CLKOUT0}] -divide_by 10
-#create_generated_clock -name {ref_clk}   -source {p:sys_clock} [get_pins {harnessSysPLL/u_pll_e1.CLKOUT1}] -divide_by 1
 ###==== END "Generated Clocks"
 
 define_attribute {p:sys_clock} {PAP_IO_DIRECTION} {INPUT}
@@ -25,24 +24,6 @@ define_attribute {p:uart_rxd} {PAP_IO_DIRECTION} {INPUT}
 define_attribute {p:uart_rxd} {PAP_IO_LOC} {A12}
 define_attribute {p:uart_rxd} {PAP_IO_VCCIO} {3.3}
 define_attribute {p:uart_rxd} {PAP_IO_STANDARD} {LVCMOS33}
-define_attribute {p:jtag_TCK} {PAP_IO_DIRECTION} {INPUT}
-define_attribute {p:jtag_TCK} {PAP_IO_LOC} {A5}
-define_attribute {p:jtag_TCK} {PAP_IO_VCCIO} {3.3}
-define_attribute {p:jtag_TCK} {PAP_IO_STANDARD} {LVCMOS33}
-define_attribute {p:jtag_TDI} {PAP_IO_DIRECTION} {INPUT}
-define_attribute {p:jtag_TDI} {PAP_IO_LOC} {L17}
-define_attribute {p:jtag_TDI} {PAP_IO_VCCIO} {3.3}
-define_attribute {p:jtag_TDI} {PAP_IO_STANDARD} {LVCMOS33}
-define_attribute {p:jtag_TMS} {PAP_IO_DIRECTION} {INPUT}
-define_attribute {p:jtag_TMS} {PAP_IO_LOC} {M17}
-define_attribute {p:jtag_TMS} {PAP_IO_VCCIO} {3.3}
-define_attribute {p:jtag_TMS} {PAP_IO_STANDARD} {LVCMOS33}
-define_attribute {p:jtag_TDO} {PAP_IO_DIRECTION} {OUTPUT}
-define_attribute {p:jtag_TDO} {PAP_IO_LOC} {M16}
-define_attribute {p:jtag_TDO} {PAP_IO_VCCIO} {3.3}
-define_attribute {p:jtag_TDO} {PAP_IO_STANDARD} {LVCMOS33}
-define_attribute {p:jtag_TDO} {PAP_IO_DRIVE} {4}
-define_attribute {p:jtag_TDO} {PAP_IO_SLEW} {SLOW}
 define_attribute {p:qspi_cs} {PAP_IO_DIRECTION} {OUTPUT}
 define_attribute {p:qspi_cs} {PAP_IO_LOC} {B8}
 define_attribute {p:qspi_cs} {PAP_IO_VCCIO} {3.3}
@@ -79,4 +60,4 @@ define_attribute {p:qspi_sck} {PAP_IO_VCCIO} {3.3}
 define_attribute {p:qspi_sck} {PAP_IO_STANDARD} {LVCMOS33}
 define_attribute {p:qspi_sck} {PAP_IO_DRIVE} {4}
 define_attribute {p:qspi_sck} {PAP_IO_SLEW} {SLOW}
-create_clock -name {jtag_clk} [get_ports {jtag_TCK}] -period {10000.000} -waveform {0.000 5000.000}
+
