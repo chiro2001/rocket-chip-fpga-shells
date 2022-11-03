@@ -1,6 +1,6 @@
 set top %top%
-# set generate_timng_report true
-set generate_timng_report ""
+set generate_timng_report "true"
+# set generate_timng_report ""
 set long_name %long_name%
 set fpga_dir %fpga_dir%
 set vsrc_mem %vsrc_mem%
