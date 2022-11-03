@@ -12,13 +12,13 @@ module VexChipTop (
 );
 wire pll_clock;
 wire pll_locked;
-harnessSysPLL harnessSysPLL(
+harnessSysPLLPerf harnessSysPLL(
   .clkin1(sys_clock),
   .pll_rst(reset),
   .pll_lock(pll_locked),
   .clkout0(pll_clock)
 );
-VexChipDebug core(
+VexChip core(
   .reset(!pll_locked),
   .sys_clock(pll_clock),
   .jtag_tms(jtag_tms),

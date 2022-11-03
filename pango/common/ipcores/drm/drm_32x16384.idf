@@ -19,52 +19,20 @@
             <value>false</value>
         </param>
         <param>
-            <name>SAMEWIDTH_EN</name>
-            <value>true</value>
-        </param>
-        <param>
-            <name>RESET_TYPE</name>
-            <value>ASYNC</value>
-        </param>
-        <param>
-            <name>INIT_EN</name>
-            <value>false</value>
-        </param>
-        <param>
-            <name>WR_ADDR_STROBE_EN</name>
-            <value>false</value>
+            <name>RD_BE_WIDTH</name>
+            <value>4</value>
         </param>
         <param>
             <name>WR_ADDR_WIDTH</name>
             <value>14</value>
         </param>
         <param>
-            <name>POWER_OPT</name>
-            <value>false</value>
-        </param>
-        <param>
-            <name>RD_ADDR_STROBE_EN</name>
-            <value>false</value>
-        </param>
-        <param>
-            <name>MODE_9K</name>
-            <value>false</value>
-        </param>
-        <param>
-            <name>RD_BE_WIDTH</name>
-            <value>4</value>
-        </param>
-        <param>
             <name>MODE_18K</name>
             <value>true</value>
         </param>
         <param>
-            <name>OUTPUT_REG</name>
+            <name>WR_ADDR_STROBE_EN</name>
             <value>false</value>
-        </param>
-        <param>
-            <name>INIT_FORMAT</name>
-            <value>BIN</value>
         </param>
         <param>
             <name>RD_ADDR_WIDTH</name>
@@ -75,40 +43,72 @@
             <value>32</value>
         </param>
         <param>
-            <name>RD_DATA_WIDTH</name>
-            <value>32</value>
+            <name>MODE_9K</name>
+            <value>false</value>
         </param>
         <param>
-            <name>DRM_MODE_SEL</name>
-            <value>AUTO</value>
+            <name>SAMEWIDTH_EN</name>
+            <value>true</value>
+        </param>
+        <param>
+            <name>RD_DATA_WIDTH</name>
+            <value>32</value>
         </param>
         <param>
             <name>RD_OCE_EN</name>
             <value>false</value>
         </param>
         <param>
-            <name>BE_WIDTH</name>
-            <value>4</value>
+            <name>RD_CLK_OR_POL_INV</name>
+            <value>false</value>
         </param>
         <param>
-            <name>WR_BYTE_EN</name>
-            <value>true</value>
+            <name>INIT_FORMAT</name>
+            <value>HEX</value>
         </param>
         <param>
-            <name>WR_CLK_EN</name>
-            <value>true</value>
+            <name>RESET_TYPE</name>
+            <value>ASYNC</value>
         </param>
         <param>
-            <name>INIT_FILE</name>
-            <value>NONE</value>
+            <name>OUTPUT_REG</name>
+            <value>false</value>
         </param>
         <param>
             <name>BYTE_SIZE</name>
             <value>8</value>
         </param>
         <param>
-            <name>RD_CLK_OR_POL_INV</name>
+            <name>WR_CLK_EN</name>
+            <value>true</value>
+        </param>
+        <param>
+            <name>BE_WIDTH</name>
+            <value>4</value>
+        </param>
+        <param>
+            <name>INIT_EN</name>
+            <value>true</value>
+        </param>
+        <param>
+            <name>POWER_OPT</name>
             <value>false</value>
+        </param>
+        <param>
+            <name>INIT_FILE</name>
+            <value>/home/chiro/programs/chipyard-new/software/coremark/overlay/coremark.scratch.bin.dat</value>
+        </param>
+        <param>
+            <name>WR_BYTE_EN</name>
+            <value>true</value>
+        </param>
+        <param>
+            <name>RD_ADDR_STROBE_EN</name>
+            <value>false</value>
+        </param>
+        <param>
+            <name>DRM_MODE_SEL</name>
+            <value>AUTO</value>
         </param>
     </param_list>
     <pin_list>

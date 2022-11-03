@@ -7,6 +7,6 @@ if {$generate_timng_report != ""} {
   report_timing
 }
 # report_power 
-gen_netlist 
+# gen_netlist 
 
 puts "Implementation done!"

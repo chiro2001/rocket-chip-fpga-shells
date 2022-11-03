@@ -38,9 +38,9 @@ localparam RESET_TYPE = "ASYNC" ; // @IPC enum Sync_Internally,SYNC,ASYNC
 
 localparam POWER_OPT = 0 ; // @IPC bool
 
-localparam INIT_FILE = "NONE" ; // @IPC string
+localparam INIT_FILE = "/home/chiro/programs/chipyard-new/software/coremark/overlay/coremark.scratch.bin.dat" ; // @IPC string
 
-localparam INIT_FORMAT = "BIN" ; // @IPC enum BIN,HEX
+localparam INIT_FORMAT = "HEX" ; // @IPC enum BIN,HEX
 
 localparam WR_BYTE_EN = 1 ; // @IPC bool
 
@@ -50,7 +50,7 @@ localparam RD_BE_WIDTH = 4 ; // @IPC int 2,128
 
 localparam BYTE_SIZE = 8 ; // @IPC enum 8,9
 
-localparam INIT_EN = 0 ; // @IPC bool
+localparam INIT_EN = 1 ; // @IPC bool
 
 localparam SAMEWIDTH_EN = 1 ; // @IPC bool
 
