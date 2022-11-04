@@ -14,14 +14,16 @@ module VexChipTop (input reset,
     /* synthesis syn_keep=1 */ wire  rvfi_intr;
     /* synthesis syn_keep=1 */ wire [31:0] rvfi_pc_rdata;
     /* synthesis syn_keep=1 */ wire [31:0] rvfi_pc_wdata;
-    harnessSysPLLPerf harnessSysPLL(
-    .clkin1(sys_clock),
-    .pll_rst(reset),
-    .pll_lock(pll_locked),
-    .clkout0(pll_clock)
-    );
+    // harnessSysPLLPerf harnessSysPLL(
+    // .clkin1(sys_clock),
+    // .pll_rst(reset),
+    // .pll_lock(pll_locked),
+    // .clkout0(pll_clock)
+    // );
+    assign pll_clock = sys_clock;
+    assign pll_locked = reset;
     VexChip core(
-    .reset(!pll_locked),
+    .reset((!pll_locked)),
     .sys_clock(pll_clock),
     .uart_txd(uart_txd),
     .uart_rxd(uart_rxd),
