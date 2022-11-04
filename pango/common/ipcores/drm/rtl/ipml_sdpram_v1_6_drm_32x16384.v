@@ -68,7 +68,7 @@ localparam MODE_18K = 1 ; // @IPC bool
 
 //
 
-`include "/home/chiro/programs/chipyard-new/fpga/fpga-shells/pango/common/ipcores/drm/rtl/drm_32x16384_init_param.v"
+`include "drm_32x16384_init_param.v"
 
 //********************************************************************************************************************************************************************   
 //declare localparam
