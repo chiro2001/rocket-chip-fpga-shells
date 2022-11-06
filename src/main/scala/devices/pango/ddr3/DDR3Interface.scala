@@ -40,7 +40,7 @@ class PangoPGL22GMIGIsland(c : PangoPGL22GMIGParams)(implicit p: Parameters) ext
       executable    = true,
       supportsWrite = TransferSizes(1, 256*8),
       supportsRead  = TransferSizes(1, 256*8))),
-    beatBytes = 8)))
+    beatBytes = 16)))
 
   lazy val module = new LazyModuleImp(this) {
     val io = IO(new Bundle {

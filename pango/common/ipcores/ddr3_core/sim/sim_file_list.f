@@ -20,7 +20,7 @@
 ./../rtl/ipsl_hmic_h_ddrc_top_v1_1.v                                               
 ./../rtl/ipsl_hmic_h_phy_top_v1_1.v                                                
 ./../rtl/ipsl_hmic_h_phy_io_v1_1.v                                                       
-./../ddr3_core.v                                                            
+./../ddr3_core_64.v                                                            
                                                                             
 /opt/pds/pango/PDS_2020.2/ip/system_ip/ipsl_hmic_h/ipsl_hmic_h_eval/ipsl_hmic_h/../../../../../arch/vendor/pango/verilog/simulation/modelsim10.2c/ddrc_source_codes/rstn_sync.vp                       
 /opt/pds/pango/PDS_2020.2/ip/system_ip/ipsl_hmic_h/ipsl_hmic_h_eval/ipsl_hmic_h/../../../../../arch/vendor/pango/verilog/simulation/modelsim10.2c/ddrc_source_codes/sync.vp                                           

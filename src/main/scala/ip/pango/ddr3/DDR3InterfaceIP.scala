@@ -190,13 +190,59 @@ class PGL22GMIGIODDRIO(depth: BigInt = BigInt(0x80000000L)) extends PGL22GMIGIOD
   val rvalid_0 = Bool(OUTPUT)
 }
 
+class PGL22GMIGIODDRIO64(depth: BigInt = BigInt(0x80000000L)) extends PGL22GMIGIODDR(depth) with PGL22GMIGIOClocksReset {
+  //axi_s
+  //slave interface write address ports
+  val awid_1 = Bits(INPUT, 8)
+  val awaddr_1 = Bits(INPUT, 32)
+  val awlen_1 = Bits(INPUT, 8)
+  val awsize_1 = Bits(INPUT, 3)
+  val awburst_1 = Bits(INPUT, 2)
+  val awlock_1 = Bits(INPUT, 1)
+  val awvalid_1 = Bool(INPUT)
+  val awready_1 = Bool(OUTPUT)
+  //slave interface write data ports
+  val wdata_1 = Bits(INPUT, 64)
+  val wstrb_1 = Bits(INPUT, 16)
+  val wlast_1 = Bool(INPUT)
+  val wvalid_1 = Bool(INPUT)
+  val wready_1 = Bool(OUTPUT)
+  //slave interface write response ports
+  val bready_1 = Bool(INPUT)
+  val bid_1 = Bits(OUTPUT, 8)
+  val bresp_1 = Bits(OUTPUT, 2)
+  val bvalid_1 = Bool(OUTPUT)
+  //slave interface read address ports
+  val arid_1 = Bits(INPUT, 8)
+  val araddr_1 = Bits(INPUT, 32)
+  val arlen_1 = Bits(INPUT, 8)
+  val arsize_1 = Bits(INPUT, 3)
+  val arburst_1 = Bits(INPUT, 2)
+  val arlock_1 = Bits(INPUT, 1)
+  val arvalid_1 = Bool(INPUT)
+  val arready_1 = Bool(OUTPUT)
+  //slave interface read data ports
+  val rready_1 = Bool(INPUT)
+  val rid_1 = Bits(OUTPUT, 8)
+  val rdata_1 = Bits(OUTPUT, 64)
+  val rresp_1 = Bits(OUTPUT, 2)
+  val rlast_1 = Bool(OUTPUT)
+  val rvalid_1 = Bool(OUTPUT)
+}
+
+trait DDR3CoreTrait {
+  val io: PGL22GMIGIODDR with PGL22GMIGIOClocksReset
+}
+
 //scalastyle:off
 //turn off linter: blackbox name must match verilog module
-class ddr3_core(depth : BigInt) extends BlackBox
-{
+class ddr3_core(depth : BigInt) extends BlackBox with DDR3CoreTrait{
   require((depth<=0x80000000L),"ddr3_core supports upto 2GB depth configuraton")
 
   val io = new PGL22GMIGIODDRIO(depth)
+}
+class ddr3_core_64(depth : BigInt) extends BlackBox with DDR3CoreTrait {
+  val io = new PGL22GMIGIODDRIO64(depth)
 }
 //scalastyle:on
 

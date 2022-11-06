@@ -78,8 +78,8 @@ reg [26:0] cnt;
     wire              axi_awurgent        ;
     wire              axi_awpoison        ;
           
-    wire  [128-1:0]   axi_wdata           ;
-    wire  [16-1:0]    axi_wstrb           ;
+    wire  [64-1:0]   axi_wdata           ;
+    wire  [8-1:0]    axi_wstrb           ;
     
     wire              axi_wvalid          ;
     wire              axi_wready          ;
@@ -102,7 +102,7 @@ reg [26:0] cnt;
     wire              axi_arready ;
     wire              axi_arvalid ;
  
-    wire   [128-1:0]  axi_rdata /* synthesis syn_keep = 1 */;
+    wire   [64-1:0]  axi_rdata /* synthesis syn_keep = 1 */;
      
     wire   [7:0]      axi_rid ;
     wire              axi_rlast ;
@@ -167,14 +167,14 @@ test_main_ctrl #(
 );
 
 
-test_wr_ctrl_128bit #(
+test_wr_ctrl_64bit #(
  .CTRL_ADDR_WIDTH (CTRL_ADDR_WIDTH),
  .MEM_DQ_WIDTH    (16),
  .MEM_SPACE_AW    (MEM_SPACE_AW)
 ) u_test_wr_ctrl
 (
- .clk                 (axi_clk          ),
- .rst_n               (top_rst_n        ),    
+ .clk                 (axi_clk         ),
+ .rst_n               (top_rst_n       ),    
  .init_start          (init_start      ),
  .write_en            (write_en        ),
  .write_done_p        (write_done_p    ),
@@ -206,7 +206,7 @@ test_wr_ctrl_128bit #(
  .axi_bready          (axi_bready      )        
 );
 
-test_rd_ctrl_128bit #(
+test_rd_ctrl_64bit #(
  .CTRL_ADDR_WIDTH (CTRL_ADDR_WIDTH),
  .MEM_DQ_WIDTH    (16),
  .MEM_SPACE_AW    (MEM_SPACE_AW)
@@ -241,12 +241,12 @@ test_rd_ctrl_128bit #(
  .err_cnt             (                ),   
  .err_flag_led        (err_flag    )
 );
-ddr3_core u_ipsl_hmic_h_top (
+ddr3_core_64 u_ipsl_hmic_h_top (
     .pll_refclk_in        (pll_refclk_in ),
     .top_rst_n            (top_rst_n     ),
-    
-    .pll_aclk_0           (axi_clk       ),
-    .pll_aclk_1           (              ),
+      
+    .pll_aclk_0           (              ),
+    .pll_aclk_1           (axi_clk       ),
     .pll_aclk_2           (              ),
     
     .pll_lock             (pll_lock      ),
@@ -254,46 +254,46 @@ ddr3_core u_ipsl_hmic_h_top (
     .ddrc_init_done       (ddr_init_done ),
     .ddrc_rst         (0),    
       
-    .areset_0         (0),      
-    .aclk_0           (axi_clk),                                                
-    .awid_0           (axi_awid),       
-    .awaddr_0         (axi_awaddr),     
-    .awlen_0          (axi_awlen),      
-    .awsize_0         (axi_awsize),     
-    .awburst_0        (axi_awburst),    
-    .awlock_0         (axi_awlock),                                             
-    .awvalid_0        (axi_awvalid),    
-    .awready_0        (axi_awready),    
-    .awurgent_0       (axi_awurgent),   
-    .awpoison_0       (axi_awpoison),                                           
-    .wdata_0          (axi_wdata),
-    .wstrb_0          (axi_wstrb), 
-    .wlast_0          (axi_wlast),      
-    .wvalid_0         (axi_wvalid),     
-    .wready_0         (axi_wready),                                             
-    .bid_0            (axi_bid),        
-    .bresp_0          (axi_bresp),      
-    .bvalid_0         (axi_bvalid),     
-    .bready_0         (axi_bready),                                     
-    .arid_0           (axi_arid     ),       
-    .araddr_0         (axi_araddr   ),       
-    .arlen_0          (axi_arlen    ),       
-    .arsize_0         (axi_arsize   ),       
-    .arburst_0        (axi_arburst  ),       
-    .arlock_0         (axi_arlock   ),                                                    
-    .arvalid_0        (axi_arvalid  ),       
-    .arready_0        (axi_arready  ),       
-    .arpoison_0       (axi_arpoison ),                                                    
-    .rid_0            (axi_rid      ),       
-    .rdata_0          (axi_rdata    ),       
-    .rresp_0          (axi_rresp    ),       
-    .rlast_0          (axi_rlast    ),       
-    .rvalid_0         (axi_rvalid   ),       
-    .rready_0         (axi_rready   ),       
-    .arurgent_0       (axi_arurgent ),           
-    .csysreq_0        (1'b1),
-    .csysack_0        (),
-    .cactive_0        (),       
+    .areset_1         (0),               
+    .aclk_1           (axi_clk),                                                        
+    .awid_1           (axi_awid),       
+    .awaddr_1         (axi_awaddr),     
+    .awlen_1          (axi_awlen),      
+    .awsize_1         (axi_awsize),     
+    .awburst_1        (axi_awburst),    
+    .awlock_1         (axi_awlock),                       
+    .awvalid_1        (axi_awvalid),    
+    .awready_1        (axi_awready),    
+    .awurgent_1       (axi_awurgent),   
+    .awpoison_1       (axi_awpoison),                     
+    .wdata_1          (axi_wdata),      
+    .wstrb_1          (axi_wstrb),      
+    .wlast_1          (axi_wlast),      
+    .wvalid_1         (axi_wvalid),     
+    .wready_1         (axi_wready),                       
+    .bid_1            (axi_bid),        
+    .bresp_1          (axi_bresp),      
+    .bvalid_1         (axi_bvalid),     
+    .bready_1         (axi_bready),                                    
+    .arid_1           (axi_arid     ),  
+    .araddr_1         (axi_araddr   ),  
+    .arlen_1          (axi_arlen    ),  
+    .arsize_1         (axi_arsize   ),  
+    .arburst_1        (axi_arburst  ),  
+    .arlock_1         (axi_arlock   ),                      
+    .arvalid_1        (axi_arvalid  ),  
+    .arready_1        (axi_arready  ),  
+    .arpoison_1       (axi_arpoison ),                      
+    .rid_1            (axi_rid      ),  
+    .rdata_1          (axi_rdata    ),  
+    .rresp_1          (axi_rresp    ),  
+    .rlast_1          (axi_rlast    ),  
+    .rvalid_1         (axi_rvalid   ),  
+    .rready_1         (axi_rready   ),  
+    .arurgent_1       (axi_arurgent ),                
+    .csysreq_1        (1'b1),               
+    .csysack_1        (),           
+    .cactive_1        (), 
           
     .csysreq_ddrc     (1'b1),
     .csysack_ddrc     (),

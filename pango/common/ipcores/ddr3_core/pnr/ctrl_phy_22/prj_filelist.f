@@ -10,7 +10,7 @@
 ../../rtl/ipsl_hmic_h_ddrc_top_v1_1.v
 ../../rtl/ipsl_hmic_h_phy_top_v1_1.v
 ../../rtl/ipsl_hmic_h_phy_io_v1_1.v
-../../ddr3_core.v
-../../example_design/rtl/test_rd_ctrl_128bit.v
-../../example_design/rtl/test_wr_ctrl_128bit.v
+../../ddr3_core_64.v
+../../example_design/rtl/test_rd_ctrl_64bit.v
+../../example_design/rtl/test_wr_ctrl_64bit.v
 ../../example_design/rtl/ipsl_hmic_h_top_test.v
