@@ -264,7 +264,8 @@ class DDRPGL22GPlacedOverlaySysClk(val shell: PGL22GShellDDROverlays, name: Stri
     ui.clock := port.pll_aclk_0
     ui.reset := !port.pll_lock
     port.pll_refclk_in := dclk1.clock.asUInt
-    port.ddrc_rst := shell.pllReset
+    // port.ddrc_rst := shell.pllReset
+    port.ddrc_rst := false.B
     port.top_rst_n := !ar.reset
   } }
 
