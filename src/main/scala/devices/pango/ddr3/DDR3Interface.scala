@@ -82,12 +82,16 @@ class PangoPGL22GMIGIsland(c : PangoPGL22GMIGParams)(implicit p: Parameters) ext
     io.port.pll_aclk_0 := blackbox.io.pll_aclk_0
     io.port.pll_aclk_1 := blackbox.io.pll_aclk_1
     io.port.pll_aclk_2 := blackbox.io.pll_aclk_2
+    blackbox.io.aclk_0 := io.port.aclk_0
+    blackbox.io.aclk_1 := io.port.aclk_1
+    blackbox.io.aclk_2 := io.port.aclk_2
     // io.port.pll_pclk := blackbox.io.pll_pclk
     io.port.pll_lock := blackbox.io.pll_lock
     // fixme: ignore low power request
     io.port.cactive_ddrc := blackbox.io.cactive_ddrc
     io.port.csysack_ddrc := blackbox.io.csysack_ddrc
     blackbox.io.csysreq_ddrc := io.port.csysreq_ddrc
+    blackbox.io.csysreq_1 := io.port.csysreq_1
 
     val awaddr = axi_async.aw.bits.addr - UInt(offset)
     val araddr = axi_async.ar.bits.addr - UInt(offset)

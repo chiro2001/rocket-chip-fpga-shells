@@ -142,10 +142,18 @@ trait PGL22GMIGIOClocksReset extends Bundle {
   // val pll_pclk = Clock(OUTPUT)
   // DDRC 低功耗请求输入
   val csysreq_ddrc = Bool(INPUT)
+  // ?
+  val csysreq_1 = Bool(INPUT)
   // DDRC 低功耗响应
   val csysack_ddrc = Bool(OUTPUT)
   // DDRC 激活标志
   val cactive_ddrc = Bool(OUTPUT)
+  // Axi4 Port0 返回时钟
+  val aclk_0 = Clock(INPUT)
+  // Axi4 Port1 返回时钟
+  val aclk_1 = Clock(INPUT)
+  // Axi4 Port2 返回时钟
+  val aclk_2 = Clock(INPUT)
 }
 
 class PGL22GMIGIOClocksResetBundle extends PGL22GMIGIOClocksReset
