@@ -9,7 +9,7 @@ import freechips.rocketchip.diplomacy._
 import freechips.rocketchip.tilelink._
 import freechips.rocketchip.interrupts._
 import sifive.fpgashells.clocks.PLLNode
-import sifive.fpgashells.ip.pango.ddr3.{PGL22GMIGIOClocksReset, PGL22GMIGIODDR, ddr3_core}
+import sifive.fpgashells.ip.pango.ddr3.{PGL22GMIGIOClocksReset, PGL22GMIGIODDR, ddr3_core, ddr3_core_64}
 
 case class PangoPGL22GMIGParams(
                                  address: Seq[AddressSet]
@@ -54,7 +54,7 @@ class PangoPGL22GMIGIsland(c: PangoPGL22GMIGParams)(implicit p: Parameters) exte
     })
 
     //MIG black box instantiation
-    val blackbox = Module(new ddr3_core(depth))
+    val blackbox = Module(new ddr3_core_64(depth))
     val (axi_async, _) = node.in(0)
 
     //pins to top level
@@ -106,51 +106,51 @@ class PangoPGL22GMIGIsland(c: PangoPGL22GMIGParams)(implicit p: Parameters) exte
     val araddr = axi_async.ar.bits.addr - UInt(offset)
 
     //slave AXI interface write address ports
-    blackbox.io.awid_0 := axi_async.aw.bits.id
-    blackbox.io.awaddr_0 := awaddr //truncated
-    blackbox.io.awlen_0 := axi_async.aw.bits.len
-    blackbox.io.awsize_0 := axi_async.aw.bits.size
-    blackbox.io.awburst_0 := axi_async.aw.bits.burst
-    blackbox.io.awlock_0 := axi_async.aw.bits.lock
-    // blackbox.io.awcache_0 := UInt("b0011")
-    // blackbox.io.awprot_0 := axi_async.aw.bits.prot
-    // blackbox.io.awqos_0 := axi_async.aw.bits.qos
-    blackbox.io.awvalid_0 := axi_async.aw.valid
-    axi_async.aw.ready := blackbox.io.awready_0
+    blackbox.io.awid_1 := axi_async.aw.bits.id
+    blackbox.io.awaddr_1 := awaddr //truncated
+    blackbox.io.awlen_1 := axi_async.aw.bits.len
+    blackbox.io.awsize_1 := axi_async.aw.bits.size
+    blackbox.io.awburst_1 := axi_async.aw.bits.burst
+    blackbox.io.awlock_1 := axi_async.aw.bits.lock
+    // blackbox.io.awcache_1 := UInt("b0011")
+    // blackbox.io.awprot_1 := axi_async.aw.bits.prot
+    // blackbox.io.awqos_1 := axi_async.aw.bits.qos
+    blackbox.io.awvalid_1 := axi_async.aw.valid
+    axi_async.aw.ready := blackbox.io.awready_1
 
     //slave interface write data ports
-    blackbox.io.wdata_0 := axi_async.w.bits.data
-    blackbox.io.wstrb_0 := axi_async.w.bits.strb
-    blackbox.io.wlast_0 := axi_async.w.bits.last
-    blackbox.io.wvalid_0 := axi_async.w.valid
-    axi_async.w.ready := blackbox.io.wready_0
+    blackbox.io.wdata_1 := axi_async.w.bits.data
+    blackbox.io.wstrb_1 := axi_async.w.bits.strb
+    blackbox.io.wlast_1 := axi_async.w.bits.last
+    blackbox.io.wvalid_1 := axi_async.w.valid
+    axi_async.w.ready := blackbox.io.wready_1
 
     //slave interface write response
-    blackbox.io.bready_0 := axi_async.b.ready
-    axi_async.b.bits.id := blackbox.io.bid_0
-    axi_async.b.bits.resp := blackbox.io.bresp_0
-    axi_async.b.valid := blackbox.io.bvalid_0
+    blackbox.io.bready_1 := axi_async.b.ready
+    axi_async.b.bits.id := blackbox.io.bid_1
+    axi_async.b.bits.resp := blackbox.io.bresp_1
+    axi_async.b.valid := blackbox.io.bvalid_1
 
     //slave AXI interface read address ports
-    blackbox.io.arid_0 := axi_async.ar.bits.id
-    blackbox.io.araddr_0 := araddr // truncated
-    blackbox.io.arlen_0 := axi_async.ar.bits.len
-    blackbox.io.arsize_0 := axi_async.ar.bits.size
-    blackbox.io.arburst_0 := axi_async.ar.bits.burst
-    blackbox.io.arlock_0 := axi_async.ar.bits.lock
-    // blackbox.io.arcache_0 := UInt("b0011")
-    // blackbox.io.arprot_0 := axi_async.ar.bits.prot
-    // blackbox.io.arqos_0 := axi_async.ar.bits.qos
-    blackbox.io.arvalid_0 := axi_async.ar.valid
-    axi_async.ar.ready := blackbox.io.arready_0
+    blackbox.io.arid_1 := axi_async.ar.bits.id
+    blackbox.io.araddr_1 := araddr // truncated
+    blackbox.io.arlen_1 := axi_async.ar.bits.len
+    blackbox.io.arsize_1 := axi_async.ar.bits.size
+    blackbox.io.arburst_1 := axi_async.ar.bits.burst
+    blackbox.io.arlock_1 := axi_async.ar.bits.lock
+    // blackbox.io.arcache_1 := UInt("b0011")
+    // blackbox.io.arprot_1 := axi_async.ar.bits.prot
+    // blackbox.io.arqos_1 := axi_async.ar.bits.qos
+    blackbox.io.arvalid_1 := axi_async.ar.valid
+    axi_async.ar.ready := blackbox.io.arready_1
 
     //slace AXI interface read data ports
-    blackbox.io.rready_0 := axi_async.r.ready
-    axi_async.r.bits.id := blackbox.io.rid_0
-    axi_async.r.bits.data := blackbox.io.rdata_0
-    axi_async.r.bits.resp := blackbox.io.rresp_0
-    axi_async.r.bits.last := blackbox.io.rlast_0
-    axi_async.r.valid := blackbox.io.rvalid_0
+    blackbox.io.rready_1 := axi_async.r.ready
+    axi_async.r.bits.id := blackbox.io.rid_1
+    axi_async.r.bits.data := blackbox.io.rdata_1
+    axi_async.r.bits.resp := blackbox.io.rresp_1
+    axi_async.r.bits.last := blackbox.io.rlast_1
+    axi_async.r.valid := blackbox.io.rvalid_1
   }
 }
 
@@ -176,7 +176,7 @@ class PangoPGL22GMIG(c: PangoPGL22GMIGParams)(implicit p: Parameters) extends La
       val port = new PangoPGL22GMIGIO(depth)
     })
     // pllNode.in.head._1.clock := island.module.clock
-    pllNode.out.head._1.member.head.clock := island.module.io.port.pll_aclk_0
+    // pllNode.out.head._1.member.head.clock := island.module.io.port.pll_aclk_0
 
     io.port <> island.module.io.port
 

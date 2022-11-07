@@ -276,6 +276,59 @@ class DDRPGL22GShellPlacer(val shell: PGL22GShellDDROverlays, val shellInput: DD
   def place(designInput: DDRDesignInputSysClk) = new DDRPGL22GPlacedOverlaySysClk(shell, valName.name, designInput, shellInput)
 }
 
+class TLDDRPGL22GPlacedOverlay(val shell: PGL22GShellTLDDROverlays, name: String, val designInput: DDRDesignInput, val shellInput: DDRShellInput)
+  extends DDRPlacedOverlay
+    [PangoPGL22GMIGPads](name, designInput, shellInput)
+{
+  val size = p(PGL22GDDRSize)
+
+  // val ddrClk1 = shell { ClockSinkNode(freqMHz = 50)}
+  // val ddrGroup = shell { ClockGroup() }
+  // ddrClk1 := di.wrangler := ddrGroup := di.clockSource
+
+  val migParams = PangoPGL22GMIGParams(address = AddressSet.misaligned(di.baseAddress, size))
+  val mig = LazyModule(new PangoPGL22GMIG(migParams))
+  val ioNode = BundleBridgeSource(() => mig.module.io.cloneType)
+  val topIONode = shell { ioNode.makeSink() }
+  val ddrUI     = shell { ClockSourceNode(freqMHz = 8) }
+  val areset    = shell { ClockSinkNode(Seq(ClockSinkParameters())) }
+  areset := di.wrangler := ddrUI
+
+  def overlayOutput = DDROverlayOutput(mig.node)
+  def ioFactory = new PangoPGL22GMIGPads(size)
+
+  InModuleBody { ioNode.bundle <> mig.module.io }
+
+  shell { InModuleBody {
+    require (shell.sys_clock.get.isDefined, "Use of DDRPGL22GPlacedOverlay depends on SysClockPGL22GPlacedOverlay")
+    val (sys, _) = shell.sys_clock.get.get.overlayOutput.node.out(0)
+    val (ui, _) = ddrUI.out(0)
+    // val (dclk1, _) = ddrClk1.in(0)
+    // println(di.clockSource)
+    // println(di.clockSource.out)
+    // println(di.clockSource.in)
+    // println(di.clockSource.in.head)
+    val (dclk1, _) = di.corePLL.out.head
+    val (ar, _) = areset.in(0)
+    val port = topIONode.bundle.port
+
+    io <> port
+    ui.clock := port.pll_aclk_0
+    ui.reset := !port.pll_lock
+    // TODO
+    // port.pll_refclk_in := dclk1.member.head.clock.asUInt
+    // port.ddrc_rst := shell.pllReset
+    port.ddrc_rst := false.B
+    port.top_rst_n := !ar.reset
+  } }
+
+  shell.sdc.addGroup(clocks = Seq("clk_pll_i"), pins = Seq(mig.island.module.blackbox.io.pll_aclk_0))
+}
+class TLDDRPGL22GShellPlacer(val shell: PGL22GShellTLDDROverlays, val shellInput: DDRShellInput)(implicit val valName: ValName)
+  extends DDRShellPlacer[PGL22GShellDDROverlays] {
+  def place(designInput: DDRDesignInput) = new TLDDRPGL22GPlacedOverlay(shell, valName.name, designInput, shellInput)
+}
+
 //Core to shell external resets
 class CTSResetPGL22GPlacedOverlay(val shell: PGL22GShellBasicOverlays, name: String, val designInput: CTSResetDesignInput, val shellInput: CTSResetShellInput)
   extends CTSResetPlacedOverlay(name, designInput, shellInput)
@@ -343,6 +396,10 @@ abstract class PGL22GShellBasicOverlays()(implicit p: Parameters) extends PangoP
 
 abstract class PGL22GShellDDROverlays(implicit p: Parameters) extends PGL22GShellBasicOverlays {
   val ddr = Overlay(DDROverlayKeySysClk, new DDRPGL22GShellPlacer(this, DDRShellInputSysClk()))
+}
+
+abstract class PGL22GShellTLDDROverlays(implicit p: Parameters) extends PGL22GShellBasicOverlays {
+  val ddr = Overlay(DDROverlayKey, new TLDDRPGL22GShellPlacer(this, DDRShellInput()))
 }
 
 class PGL22GShell()(implicit p: Parameters) extends PGL22GShellBasicOverlays {
