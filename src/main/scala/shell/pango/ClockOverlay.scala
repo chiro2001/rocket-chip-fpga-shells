@@ -29,12 +29,15 @@ abstract class SingleEndedClockInputPangoPlacedOverlay(name: String, di: ClockIn
   def shell: PangoShell
 
   shell { InModuleBody {
-    val ibuf = Module(new GTP_INBUFG)
-    ibuf.suggestName(s"${name}_ibufg")
-
+    // val ibuf = Module(new GTP_INBUFG)
+    // ibuf.suggestName(s"${name}_ibufg")
+    //
+    // val (c, _) = node.out(0)
+    // ibuf.io.I  := io
+    // c.clock := ibuf.io.O
+    // c.reset := shell.pllReset
     val (c, _) = node.out(0)
-    ibuf.io.I  := io
-    c.clock := ibuf.io.O
+    c.clock := io
     c.reset := shell.pllReset
   } }
 }
