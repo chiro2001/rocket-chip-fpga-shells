@@ -149,16 +149,23 @@ trait PGL22GMIGIOClocksReset extends Bundle {
   // DDRC 激活标志
   val cactive_ddrc = Bool(OUTPUT)
   // Axi4 Port0 返回时钟
-  val aclk_0 = Clock(INPUT)
+  def aclk_0: Option[Clock]
   // Axi4 Port1 返回时钟
-  val aclk_1 = Clock(INPUT)
+  def aclk_1: Option[Clock]
   // Axi4 Port2 返回时钟
-  val aclk_2 = Clock(INPUT)
+  def aclk_2: Option[Clock]
 }
 
-class PGL22GMIGIOClocksResetBundle extends PGL22GMIGIOClocksReset
+class PGL22GMIGIOClocksResetBundle(useClock: Int = 1) extends PGL22GMIGIOClocksReset {
+  override val aclk_0 = if (useClock == 0) Some(Input(Clock())) else None
 
-class PGL22GMIGIODDRIO(depth: BigInt = BigInt(0x80000000L)) extends PGL22GMIGIODDR(depth) with PGL22GMIGIOClocksReset {
+  override val aclk_1 = if (useClock == 1) Some(Input(Clock())) else None
+
+  override val aclk_2 = if (useClock == 2) Some(Input(Clock())) else None
+}
+
+class PGL22GMIGIODDRIO(depth: BigInt = BigInt(0x80000000L), useClock: Int = 1)
+  extends PGL22GMIGIODDR(depth) with PGL22GMIGIOClocksReset {
   //axi_s
   //slave interface write address ports
   val awid_0 = Bits(INPUT, 8)
@@ -196,9 +203,16 @@ class PGL22GMIGIODDRIO(depth: BigInt = BigInt(0x80000000L)) extends PGL22GMIGIOD
   val rresp_0 = Bits(OUTPUT, 2)
   val rlast_0 = Bool(OUTPUT)
   val rvalid_0 = Bool(OUTPUT)
+
+  override val aclk_0 = if (useClock == 0) Some(Input(Clock())) else None
+
+  override val aclk_1 = if (useClock == 1) Some(Input(Clock())) else None
+
+  override val aclk_2 = if (useClock == 2) Some(Input(Clock())) else None
 }
 
-class PGL22GMIGIODDRIO64(depth: BigInt = BigInt(0x80000000L)) extends PGL22GMIGIODDR(depth) with PGL22GMIGIOClocksReset {
+class PGL22GMIGIODDRIO64(depth: BigInt = BigInt(0x80000000L), useClock: Int = 1)
+  extends PGL22GMIGIODDR(depth) with PGL22GMIGIOClocksReset {
   //axi_s
   //slave interface write address ports
   val awid_1 = Bits(INPUT, 8)
@@ -236,6 +250,12 @@ class PGL22GMIGIODDRIO64(depth: BigInt = BigInt(0x80000000L)) extends PGL22GMIGI
   val rresp_1 = Bits(OUTPUT, 2)
   val rlast_1 = Bool(OUTPUT)
   val rvalid_1 = Bool(OUTPUT)
+
+  override val aclk_0 = if (useClock == 0) Some(Input(Clock())) else None
+
+  override val aclk_1 = if (useClock == 1) Some(Input(Clock())) else None
+
+  override val aclk_2 = if (useClock == 2) Some(Input(Clock())) else None
 }
 
 trait DDR3CoreTrait {

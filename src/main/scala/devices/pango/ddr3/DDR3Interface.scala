@@ -12,34 +12,40 @@ import sifive.fpgashells.clocks.PLLNode
 import sifive.fpgashells.ip.pango.ddr3.{PGL22GMIGIOClocksReset, PGL22GMIGIODDR, ddr3_core}
 
 case class PangoPGL22GMIGParams(
-  address : Seq[AddressSet]
-)
+                                 address: Seq[AddressSet]
+                               )
 
-class PangoPGL22GMIGPads(depth : BigInt) extends PGL22GMIGIODDR(depth) {
-  def this(c : PangoPGL22GMIGParams) {
+class PangoPGL22GMIGPads(depth: BigInt) extends PGL22GMIGIODDR(depth) {
+  def this(c: PangoPGL22GMIGParams) {
     this(AddressRange.fromSets(c.address).head.size)
   }
 }
 
-class PangoPGL22GMIGIO(depth : BigInt) extends PGL22GMIGIODDR(depth) with PGL22GMIGIOClocksReset
+class PangoPGL22GMIGIO(depth: BigInt, useClock: Int = 1) extends PGL22GMIGIODDR(depth) with PGL22GMIGIOClocksReset {
+  override val aclk_0 = if (useClock == 0) Some(Input(Clock())) else None
 
-class PangoPGL22GMIGIsland(c : PangoPGL22GMIGParams)(implicit p: Parameters) extends LazyModule with CrossesToOnlyOneClockDomain {
+  override val aclk_1 = if (useClock == 1) Some(Input(Clock())) else None
+
+  override val aclk_2 = if (useClock == 2) Some(Input(Clock())) else None
+}
+
+class PangoPGL22GMIGIsland(c: PangoPGL22GMIGParams)(implicit p: Parameters) extends LazyModule with CrossesToOnlyOneClockDomain {
   val ranges = AddressRange.fromSets(c.address)
-  require (ranges.size == 1, "DDR range must be contiguous")
+  require(ranges.size == 1, "DDR range must be contiguous")
   val offset = ranges.head.base
   val depth = ranges.head.size
   val crossing = AsynchronousCrossing(8)
   // require((depth<=0x80000000L),"ddr3_core supports upto 2GB depth configuraton")
-  
+
   val device = new MemoryDevice
   val node = AXI4SlaveNode(Seq(AXI4SlavePortParameters(
-      slaves = Seq(AXI4SlaveParameters(
-      address       = c.address,
-      resources     = device.reg,
-      regionType    = RegionType.UNCACHED,
-      executable    = true,
-      supportsWrite = TransferSizes(1, 256*8),
-      supportsRead  = TransferSizes(1, 256*8))),
+    slaves = Seq(AXI4SlaveParameters(
+      address = c.address,
+      resources = device.reg,
+      regionType = RegionType.UNCACHED,
+      executable = true,
+      supportsWrite = TransferSizes(1, 256 * 8),
+      supportsRead = TransferSizes(1, 256 * 8))),
     beatBytes = 16)))
 
   lazy val module = new LazyModuleImp(this) {
@@ -82,9 +88,12 @@ class PangoPGL22GMIGIsland(c : PangoPGL22GMIGParams)(implicit p: Parameters) ext
     io.port.pll_aclk_0 := blackbox.io.pll_aclk_0
     io.port.pll_aclk_1 := blackbox.io.pll_aclk_1
     io.port.pll_aclk_2 := blackbox.io.pll_aclk_2
-    blackbox.io.aclk_0 := io.port.aclk_0
-    blackbox.io.aclk_1 := io.port.aclk_1
-    blackbox.io.aclk_2 := io.port.aclk_2
+    if (blackbox.io.aclk_0.nonEmpty && io.port.aclk_0.nonEmpty)
+      blackbox.io.aclk_0.get := io.port.aclk_0.get
+    if (blackbox.io.aclk_1.nonEmpty && io.port.aclk_1.nonEmpty)
+      blackbox.io.aclk_1.get := io.port.aclk_1.get
+    if (blackbox.io.aclk_2.nonEmpty && io.port.aclk_2.nonEmpty)
+      blackbox.io.aclk_2.get := io.port.aclk_2.get
     // io.port.pll_pclk := blackbox.io.pll_pclk
     io.port.pll_lock := blackbox.io.pll_lock
     // fixme: ignore low power request
@@ -145,16 +154,16 @@ class PangoPGL22GMIGIsland(c : PangoPGL22GMIGParams)(implicit p: Parameters) ext
   }
 }
 
-class PangoPGL22GMIG(c : PangoPGL22GMIGParams)(implicit p: Parameters) extends LazyModule {
+class PangoPGL22GMIG(c: PangoPGL22GMIGParams)(implicit p: Parameters) extends LazyModule {
   val ranges = AddressRange.fromSets(c.address)
   val depth = ranges.head.size
 
-  val buffer  = LazyModule(new TLBuffer)
-  val toaxi4  = LazyModule(new TLToAXI4(adapterName = Some("mem")))
+  val buffer = LazyModule(new TLBuffer)
+  val toaxi4 = LazyModule(new TLToAXI4(adapterName = Some("mem")))
   val indexer = LazyModule(new AXI4IdIndexer(idBits = 4))
-  val deint   = LazyModule(new AXI4Deinterleaver(p(CacheBlockBytes)))
-  val yank    = LazyModule(new AXI4UserYanker)
-  val island  = LazyModule(new PangoPGL22GMIGIsland(c))
+  val deint = LazyModule(new AXI4Deinterleaver(p(CacheBlockBytes)))
+  val yank = LazyModule(new AXI4UserYanker)
+  val island = LazyModule(new PangoPGL22GMIGIsland(c))
 
   val node: TLInwardNode =
     island.crossAXI4In(island.node) := yank.node := deint.node := indexer.node := toaxi4.node := buffer.node
