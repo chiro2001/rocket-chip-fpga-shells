@@ -2,6 +2,7 @@ package sifive.fpgashells.ip.pango.ddr3
 
 import Chisel.{Bits, _}
 import chisel3.experimental.{Analog, attach}
+import freechips.rocketchip.amba.axi4.AXI4Bundle
 import freechips.rocketchip.util.ElaborationArtefacts
 import freechips.rocketchip.util.GenericParameterizedBundle
 import freechips.rocketchip.config._
@@ -10,80 +11,80 @@ import freechips.rocketchip.config._
 // Black Box
 
 /**
-  .pll_refclk_in(pll_refclk_in),        // input
-  .top_rst_n(top_rst_n),                // input
-  .ddrc_rst(ddrc_rst),                  // input
-  .csysreq_ddrc(csysreq_ddrc),          // input
-  .csysack_ddrc(csysack_ddrc),          // output
-  .cactive_ddrc(cactive_ddrc),          // output
-  .pll_lock(pll_lock),                  // output
-  .pll_aclk_0(pll_aclk_0),              // output
-  .pll_aclk_1(pll_aclk_1),              // output
-  .pll_aclk_2(pll_aclk_2),              // output
-  .ddrphy_rst_done(ddrphy_rst_done),    // output
-  .ddrc_init_done(ddrc_init_done),      // output
-
-  .pad_loop_in(pad_loop_in),            // input
-  .pad_loop_in_h(pad_loop_in_h),        // input
-  // .pad_rstn_ch0(pad_rstn_ch0),          // output
-  // .pad_ddr_clk_w(pad_ddr_clk_w),        // output
-  // .pad_ddr_clkn_w(pad_ddr_clkn_w),      // output
-  // .pad_csn_ch0(pad_csn_ch0),            // output
-  // .pad_addr_ch0(pad_addr_ch0),          // output [15:0]
-  // .pad_dq_ch0(pad_dq_ch0),              // inout [15:0]
-  // .pad_dqs_ch0(pad_dqs_ch0),            // inout [1:0]
-  // .pad_dqsn_ch0(pad_dqsn_ch0),          // inout [1:0]
-  // .pad_dm_rdqs_ch0(pad_dm_rdqs_ch0),    // output [1:0]
-  // .pad_cke_ch0(pad_cke_ch0),            // output
-  // .pad_odt_ch0(pad_odt_ch0),            // output
-  // .pad_rasn_ch0(pad_rasn_ch0),          // output
-  // .pad_casn_ch0(pad_casn_ch0),          // output
-  // .pad_wen_ch0(pad_wen_ch0),            // output
-  // .pad_ba_ch0(pad_ba_ch0),              // output [2:0]
-  .pad_loop_out(pad_loop_out),          // output
-  .pad_loop_out_h(pad_loop_out_h),      // output
-
-  .areset_0(areset_0),                  // input
-  .aclk_0(aclk_0),                      // input
-  .awid_0(awid_0),                      // input [7:0]
-  .awaddr_0(awaddr_0),                  // input [31:0]
-  .awlen_0(awlen_0),                    // input [7:0]
-  .awsize_0(awsize_0),                  // input [2:0]
-  .awburst_0(awburst_0),                // input [1:0]
-  .awlock_0(awlock_0),                  // input
-  .awvalid_0(awvalid_0),                // input
-  .awready_0(awready_0),                // output
-  .awurgent_0(awurgent_0),              // input
-  .awpoison_0(awpoison_0),              // input
-  .wdata_0(wdata_0),                    // input [127:0]
-  .wstrb_0(wstrb_0),                    // input [15:0]
-  .wlast_0(wlast_0),                    // input
-  .wvalid_0(wvalid_0),                  // input
-  .wready_0(wready_0),                  // output
-  .bid_0(bid_0),                        // output [7:0]
-  .bresp_0(bresp_0),                    // output [1:0]
-  .bvalid_0(bvalid_0),                  // output
-  .bready_0(bready_0),                  // input
-  .arid_0(arid_0),                      // input [7:0]
-  .araddr_0(araddr_0),                  // input [31:0]
-  .arlen_0(arlen_0),                    // input [7:0]
-  .arsize_0(arsize_0),                  // input [2:0]
-  .arburst_0(arburst_0),                // input [1:0]
-  .arlock_0(arlock_0),                  // input
-  .arvalid_0(arvalid_0),                // input
-  .arready_0(arready_0),                // output
-  .arpoison_0(arpoison_0),              // input
-  .rid_0(rid_0),                        // output [7:0]
-  .rdata_0(rdata_0),                    // output [127:0]
-  .rresp_0(rresp_0),                    // output [1:0]
-  .rlast_0(rlast_0),                    // output
-  .rvalid_0(rvalid_0),                  // output
-  .rready_0(rready_0),                  // input
-  .arurgent_0(arurgent_0),              // input
-  .csysreq_0(csysreq_0),                // input
-  .csysack_0(csysack_0),                // output
-  .cactive_0(cactive_0)                 // output
-);
+ * .pll_refclk_in(pll_refclk_in),        // input
+ * .top_rst_n(top_rst_n),                // input
+ * .ddrc_rst(ddrc_rst),                  // input
+ * .csysreq_ddrc(csysreq_ddrc),          // input
+ * .csysack_ddrc(csysack_ddrc),          // output
+ * .cactive_ddrc(cactive_ddrc),          // output
+ * .pll_lock(pll_lock),                  // output
+ * .pll_aclk_0(pll_aclk_0),              // output
+ * .pll_aclk_1(pll_aclk_1),              // output
+ * .pll_aclk_2(pll_aclk_2),              // output
+ * .ddrphy_rst_done(ddrphy_rst_done),    // output
+ * .ddrc_init_done(ddrc_init_done),      // output
+ *
+ * .pad_loop_in(pad_loop_in),            // input
+ * .pad_loop_in_h(pad_loop_in_h),        // input
+ * // .pad_rstn_ch0(pad_rstn_ch0),          // output
+ * // .pad_ddr_clk_w(pad_ddr_clk_w),        // output
+ * // .pad_ddr_clkn_w(pad_ddr_clkn_w),      // output
+ * // .pad_csn_ch0(pad_csn_ch0),            // output
+ * // .pad_addr_ch0(pad_addr_ch0),          // output [15:0]
+ * // .pad_dq_ch0(pad_dq_ch0),              // inout [15:0]
+ * // .pad_dqs_ch0(pad_dqs_ch0),            // inout [1:0]
+ * // .pad_dqsn_ch0(pad_dqsn_ch0),          // inout [1:0]
+ * // .pad_dm_rdqs_ch0(pad_dm_rdqs_ch0),    // output [1:0]
+ * // .pad_cke_ch0(pad_cke_ch0),            // output
+ * // .pad_odt_ch0(pad_odt_ch0),            // output
+ * // .pad_rasn_ch0(pad_rasn_ch0),          // output
+ * // .pad_casn_ch0(pad_casn_ch0),          // output
+ * // .pad_wen_ch0(pad_wen_ch0),            // output
+ * // .pad_ba_ch0(pad_ba_ch0),              // output [2:0]
+ * .pad_loop_out(pad_loop_out),          // output
+ * .pad_loop_out_h(pad_loop_out_h),      // output
+ *
+ * .areset_0(areset_0),                  // input
+ * .aclk_0(aclk_0),                      // input
+ * .awid_0(awid_0),                      // input [7:0]
+ * .awaddr_0(awaddr_0),                  // input [31:0]
+ * .awlen_0(awlen_0),                    // input [7:0]
+ * .awsize_0(awsize_0),                  // input [2:0]
+ * .awburst_0(awburst_0),                // input [1:0]
+ * .awlock_0(awlock_0),                  // input
+ * .awvalid_0(awvalid_0),                // input
+ * .awready_0(awready_0),                // output
+ * .awurgent_0(awurgent_0),              // input
+ * .awpoison_0(awpoison_0),              // input
+ * .wdata_0(wdata_0),                    // input [127:0]
+ * .wstrb_0(wstrb_0),                    // input [15:0]
+ * .wlast_0(wlast_0),                    // input
+ * .wvalid_0(wvalid_0),                  // input
+ * .wready_0(wready_0),                  // output
+ * .bid_0(bid_0),                        // output [7:0]
+ * .bresp_0(bresp_0),                    // output [1:0]
+ * .bvalid_0(bvalid_0),                  // output
+ * .bready_0(bready_0),                  // input
+ * .arid_0(arid_0),                      // input [7:0]
+ * .araddr_0(araddr_0),                  // input [31:0]
+ * .arlen_0(arlen_0),                    // input [7:0]
+ * .arsize_0(arsize_0),                  // input [2:0]
+ * .arburst_0(arburst_0),                // input [1:0]
+ * .arlock_0(arlock_0),                  // input
+ * .arvalid_0(arvalid_0),                // input
+ * .arready_0(arready_0),                // output
+ * .arpoison_0(arpoison_0),              // input
+ * .rid_0(rid_0),                        // output [7:0]
+ * .rdata_0(rdata_0),                    // output [127:0]
+ * .rresp_0(rresp_0),                    // output [1:0]
+ * .rlast_0(rlast_0),                    // output
+ * .rvalid_0(rvalid_0),                  // output
+ * .rready_0(rready_0),                  // input
+ * .arurgent_0(arurgent_0),              // input
+ * .csysreq_0(csysreq_0),                // input
+ * .csysack_0(csysack_0),                // output
+ * .cactive_0(cactive_0)                 // output
+ * );
  */
 
 trait PGL22GMIGIODDRBaseTraitInOut extends Bundle {
@@ -108,13 +109,35 @@ trait PGL22GMIGIODDRBaseTraitInOut extends Bundle {
   val pad_loop_in_h = Bool(INPUT)
   val pad_loop_out = Bool(OUTPUT)
   val pad_loop_out_h = Bool(OUTPUT)
+
+  def connectPads(ddrIO: PGL22GMIGIODDR) = {
+    attach(pad_dq_ch0, ddrIO.pad_dq_ch0)
+    attach(pad_dqsn_ch0, ddrIO.pad_dqsn_ch0)
+    attach(pad_dqs_ch0, ddrIO.pad_dqs_ch0)
+    pad_addr_ch0 <> ddrIO.pad_addr_ch0
+    pad_ba_ch0 <> ddrIO.pad_ba_ch0
+    pad_rasn_ch0 <> ddrIO.pad_rasn_ch0
+    pad_casn_ch0 <> ddrIO.pad_casn_ch0
+    pad_wen_ch0 <> ddrIO.pad_wen_ch0
+    pad_rstn_ch0 <> ddrIO.pad_rstn_ch0
+    pad_ddr_clk_w <> ddrIO.pad_ddr_clk_w
+    pad_ddr_clkn_w <> ddrIO.pad_ddr_clkn_w
+    pad_cke_ch0 <> ddrIO.pad_cke_ch0
+    pad_csn_ch0 <> ddrIO.pad_csn_ch0
+    pad_dm_rdqs_ch0 <> ddrIO.pad_dm_rdqs_ch0
+    pad_odt_ch0 <> ddrIO.pad_odt_ch0
+    pad_loop_in <> ddrIO.pad_loop_in
+    pad_loop_in_h <> ddrIO.pad_loop_in_h
+    pad_loop_out <> ddrIO.pad_loop_out
+    pad_loop_out_h <> ddrIO.pad_loop_out_h
+  }
 }
 
 class PGL22GMIGIODDRBase extends PGL22GMIGIODDRBaseTraitInOut
 
 class PGL22GMIGIODDR(depth: BigInt = BigInt(0x80000000L))
   extends GenericParameterizedBundle(depth)
-  with PGL22GMIGIODDRBaseTraitInOut {
+    with PGL22GMIGIODDRBaseTraitInOut {
   // require((depth<=0x80000000L),"PGL22GMIGIODDR supports upto 2GB depth configuraton")
 }
 
@@ -148,12 +171,35 @@ trait PGL22GMIGIOClocksReset extends Bundle {
   val csysack_ddrc = Bool(OUTPUT)
   // DDRC 激活标志
   val cactive_ddrc = Bool(OUTPUT)
+
   // Axi4 Port0 返回时钟
   def aclk_0: Option[Clock]
+
   // Axi4 Port1 返回时钟
   def aclk_1: Option[Clock]
+
   // Axi4 Port2 返回时钟
   def aclk_2: Option[Clock]
+  
+  def connectClockResetIOs(ddrCtrl: PGL22GMIGIOClocksReset) ={
+    pll_refclk_in <> ddrCtrl.pll_refclk_in
+    top_rst_n <> ddrCtrl.top_rst_n
+    ddrc_rst <> ddrCtrl.ddrc_rst
+    pll_lock <> ddrCtrl.pll_lock
+    ddrphy_rst_done <> ddrCtrl.ddrphy_rst_done
+    ddrc_init_done <> ddrCtrl.ddrc_init_done
+    pll_aclk_0 <> ddrCtrl.pll_aclk_0
+    pll_aclk_1 <> ddrCtrl.pll_aclk_1
+    pll_aclk_2 <> ddrCtrl.pll_aclk_2
+    if (aclk_0.nonEmpty && ddrCtrl.aclk_0.nonEmpty) aclk_0.get <> ddrCtrl.aclk_0.get
+    if (aclk_1.nonEmpty && ddrCtrl.aclk_1.nonEmpty) aclk_1.get <> ddrCtrl.aclk_1.get
+    if (aclk_2.nonEmpty && ddrCtrl.aclk_2.nonEmpty) aclk_2.get <> ddrCtrl.aclk_2.get
+    // pll_pclk <> ddrCtrl.pll_pclk
+    csysreq_ddrc <> ddrCtrl.csysreq_ddrc
+    csysreq_1 <> ddrCtrl.csysreq_1
+    csysack_ddrc <> ddrCtrl.csysack_ddrc
+    cactive_ddrc <> ddrCtrl.cactive_ddrc
+  }
 }
 
 class PGL22GMIGIOClocksResetBundle(useClock: Int = 1) extends PGL22GMIGIOClocksReset {
@@ -209,6 +255,47 @@ class PGL22GMIGIODDRIO(depth: BigInt = BigInt(0x80000000L), useClock: Int = 1)
   override val aclk_1 = if (useClock == 1) Some(Input(Clock())) else None
 
   override val aclk_2 = if (useClock == 2) Some(Input(Clock())) else None
+
+  def connect(axi: AXI4Bundle) = {
+    val offset = depth.U
+
+    val awaddr = axi.aw.bits.addr - offset
+    val araddr = axi.ar.bits.addr - offset
+
+    axi.aw.bits.id <> awid_0
+    // axi.aw.bits.addr <> awaddr_0
+    awaddr_0 := awaddr
+    axi.aw.bits.len <> awlen_0
+    axi.aw.bits.size <> awsize_0
+    axi.aw.bits.burst <> awburst_0
+    axi.aw.bits.lock <> awlock_0
+    axi.aw.valid <> awvalid_0
+    axi.aw.ready <> awready_0
+    axi.w.bits.data <> wdata_0
+    axi.w.bits.strb <> wstrb_0
+    axi.w.bits.last <> wlast_0
+    axi.w.valid <> wvalid_0
+    axi.w.ready <> wready_0
+    axi.b.ready <> bready_0
+    axi.b.bits.id <> bid_0
+    axi.b.bits.resp <> bresp_0
+    axi.b.valid <> bvalid_0
+    axi.ar.bits.id <> arid_0
+    // axi.ar.bits.addr <> araddr_0
+    araddr_0 := araddr
+    axi.ar.bits.len <> arlen_0
+    axi.ar.bits.size <> arsize_0
+    axi.ar.bits.burst <> arburst_0
+    axi.ar.bits.lock <> arlock_0
+    axi.ar.valid <> arvalid_0
+    axi.ar.ready <> arready_0
+    axi.r.ready <> rready_0
+    axi.r.bits.id <> rid_0
+    axi.r.bits.data <> rdata_0
+    axi.r.bits.resp <> rresp_0
+    axi.r.bits.last <> rlast_0
+    axi.r.valid <> rvalid_0
+  }
 }
 
 class PGL22GMIGIODDRIO64(depth: BigInt = BigInt(0x80000000L), useClock: Int = 1)
@@ -256,6 +343,47 @@ class PGL22GMIGIODDRIO64(depth: BigInt = BigInt(0x80000000L), useClock: Int = 1)
   override val aclk_1 = if (useClock == 1) Some(Input(Clock())) else None
 
   override val aclk_2 = if (useClock == 2) Some(Input(Clock())) else None
+
+  def connect(axi: AXI4Bundle) = {
+    val offset = depth.U
+
+    val awaddr = axi.aw.bits.addr - offset
+    val araddr = axi.ar.bits.addr - offset
+
+    axi.aw.bits.id <> awid_1
+    // axi.aw.bits.addr <> awaddr_1
+    awaddr_1 := awaddr
+    axi.aw.bits.len <> awlen_1
+    axi.aw.bits.size <> awsize_1
+    axi.aw.bits.burst <> awburst_1
+    axi.aw.bits.lock <> awlock_1
+    axi.aw.valid <> awvalid_1
+    axi.aw.ready <> awready_1
+    axi.w.bits.data <> wdata_1
+    axi.w.bits.strb <> wstrb_1
+    axi.w.bits.last <> wlast_1
+    axi.w.valid <> wvalid_1
+    axi.w.ready <> wready_1
+    axi.b.ready <> bready_1
+    axi.b.bits.id <> bid_1
+    axi.b.bits.resp <> bresp_1
+    axi.b.valid <> bvalid_1
+    axi.ar.bits.id <> arid_1
+    // axi.ar.bits.addr <> araddr_1
+    araddr_1 := araddr
+    axi.ar.bits.len <> arlen_1
+    axi.ar.bits.size <> arsize_1
+    axi.ar.bits.burst <> arburst_1
+    axi.ar.bits.lock <> arlock_1
+    axi.ar.valid <> arvalid_1
+    axi.ar.ready <> arready_1
+    axi.r.ready <> rready_1
+    axi.r.bits.id <> rid_1
+    axi.r.bits.data <> rdata_1
+    axi.r.bits.resp <> rresp_1
+    axi.r.bits.last <> rlast_1
+    axi.r.valid <> rvalid_1
+  }
 }
 
 trait DDR3CoreTrait {
@@ -264,12 +392,13 @@ trait DDR3CoreTrait {
 
 //scalastyle:off
 //turn off linter: blackbox name must match verilog module
-class ddr3_core(depth : BigInt) extends BlackBox with DDR3CoreTrait{
-  require((depth<=0x80000000L),"ddr3_core supports upto 2GB depth configuraton")
+class ddr3_core(depth: BigInt) extends BlackBox with DDR3CoreTrait {
+  require((depth <= 0x80000000L), "ddr3_core supports upto 2GB depth configuraton")
 
   val io = new PGL22GMIGIODDRIO(depth)
 }
-class ddr3_core_64(depth : BigInt) extends BlackBox with DDR3CoreTrait {
+
+class ddr3_core_64(depth: BigInt) extends BlackBox with DDR3CoreTrait {
   val io = new PGL22GMIGIODDRIO64(depth)
 }
 //scalastyle:on
