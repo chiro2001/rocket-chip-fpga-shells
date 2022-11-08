@@ -126,8 +126,8 @@ trait PGL22GMIGIODDRBaseTraitInOut extends Bundle {
     pad_csn_ch0 <> ddrIO.pad_csn_ch0
     pad_dm_rdqs_ch0 <> ddrIO.pad_dm_rdqs_ch0
     pad_odt_ch0 <> ddrIO.pad_odt_ch0
-    pad_loop_in <> ddrIO.pad_loop_in
-    pad_loop_in_h <> ddrIO.pad_loop_in_h
+    ddrIO.pad_loop_in := pad_loop_in
+    ddrIO.pad_loop_in_h := pad_loop_in_h
     pad_loop_out <> ddrIO.pad_loop_out
     pad_loop_out_h <> ddrIO.pad_loop_out_h
   }
