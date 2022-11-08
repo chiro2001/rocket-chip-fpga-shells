@@ -490,3 +490,14 @@ module split_drm_21x64(
 );
 drm_21x64 inst (`DRM);
 endmodule
+module split_drm_64x8192(
+  input  [12:0]   RW0_addr,
+  input           RW0_clk,
+  input  [63:0]   RW0_wdata,
+  output [63:0]   RW0_rdata,
+  input           RW0_en,
+  input           RW0_wmode,
+  input  [7:0]    RW0_wmask
+);
+drm_64x8192 inst (`DRMM);
+endmodule
