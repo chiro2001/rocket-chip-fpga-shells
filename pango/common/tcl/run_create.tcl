@@ -30,9 +30,15 @@ if { [file exists $top_sim_file] == 1} {
   add_simulation $top_sim_file
 }
 
-set ipcores [ glob ${fpga_dir}/common/ipcores/*/*.idf ]
+set ipcores_common [ glob ${fpga_dir}/common/ipcores/*/*.idf ]
 puts "Importing IP cores: $ipcores"
-foreach {f} $ipcores {
+foreach {f} $ipcores_common {
+  add_design $f
+}
+
+set ipcores_selected [ glob ${fpga_dir}/common/${ipcores}/*/*.idf ]
+puts "Importing IP cores: $ipcores"
+foreach {f} $ipcores_selected {
   add_design $f
 }
 

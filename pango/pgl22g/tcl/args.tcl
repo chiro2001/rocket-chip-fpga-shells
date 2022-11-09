@@ -5,6 +5,7 @@ set long_name %long_name%
 set fpga_dir %fpga_dir%
 set vsrc_mem %vsrc_mem%
 set constraints %constraints%
+set ipcores %ipcores%
 
 set project_name $top
 
