@@ -40,7 +40,7 @@ module pll_50_400_v1_1 (
     
     localparam integer STATIC_RATIO2    = 12;
     
-    localparam integer STATIC_RATIO3    = 22;
+    localparam integer STATIC_RATIO3    = 20;
     
     localparam integer STATIC_RATIO4    = 12;
     
