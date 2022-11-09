@@ -1,0 +1,46 @@
+##### Written on 2020/12/22 11:45:31 ###############################
+
+
+##### DESIGN INFO ##################################################
+
+Top Module:
+	ipsl_hmic_h_top_test
+
+Constraint File(s):
+	E:/PGL22G/demo/09_ddr3_test/ipcore/ddr3_core/pnr/ctrl_phy_22/ddr_324_left.fdc
+	
+
+##### SUMMARY ######################################################
+
+Found 0 error(s), 0 critical warning(s), 0 warning(s), out of 491 constraint(s)
+
+
+Inapplicable constraints(except overwritten constraints):
+********************************************
+
+
+
+
+
+
+Constraints with issues:
+********************************************
+
+
+
+
+
+
+
+
+
+
+
+
+Constraints with matching wildcard expressions:
+********************************************
+
+
+
+
+
