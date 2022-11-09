@@ -6,7 +6,7 @@ create_clock -name {sys_clock} [get_ports {sys_clock}] -period {20} -waveform {0
 create_generated_clock -name {phy_clk}  -source {p:sys_clock} [get_pins {DDR3Mem/ddr3_core_inst/u_pll_50_400/u_pll_e1.CLKOUT0}] -multiply_by 8
 create_generated_clock -name {pclk}     -source {p:sys_clock} [get_pins {DDR3Mem/ddr3_core_inst/u_pll_50_400/u_pll_e1.CLKOUT1}] -divide_by 1
 create_generated_clock -name {axi_clk0} -source {p:sys_clock} [get_pins {DDR3Mem/ddr3_core_inst/u_pll_50_400/u_pll_e1.CLKOUT2}] -divide_by 50
-create_generated_clock -name {axi_clk1} -source {p:sys_clock} [get_pins {DDR3Mem/ddr3_core_inst/u_pll_50_400/u_pll_e1.CLKOUT3}] -divide_by 3 -multiply_by 2
+create_generated_clock -name {axi_clk1} -source {p:sys_clock} [get_pins {DDR3Mem/ddr3_core_inst/u_pll_50_400/u_pll_e1.CLKOUT3}] -divide_by 3 -multiply_by 4
 create_generated_clock -name {axi_clk2} -source {p:sys_clock} [get_pins {DDR3Mem/ddr3_core_inst/u_pll_50_400/u_pll_e1.CLKOUT4}] -divide_by 50
 ###==== END "Generated Clocks"
 
