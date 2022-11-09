@@ -6,7 +6,7 @@ create_clock -name {pll_refclk_in} {p:pll_refclk_in} -period {20} -waveform {0 1
 create_generated_clock -name {phy_clk} -source {p:pll_refclk_in} {t:u_ipsl_hmic_h_top.u_pll_50_400.clkout0} -multiply_by 8
 create_generated_clock -name {pclk} -source {p:pll_refclk_in} {t:u_ipsl_hmic_h_top.u_pll_50_400.clkout1} -multiply_by 1
 create_generated_clock -name {axi_clk0} -source {p:pll_refclk_in} {t:u_ipsl_hmic_h_top.u_pll_50_400.clkout2} -multiply_by 2
-create_generated_clock -name {axi_clk1} -source {p:pll_refclk_in} {t:u_ipsl_hmic_h_top.u_pll_50_400.clkout3} -multiply_by 0
+create_generated_clock -name {axi_clk1} -source {p:pll_refclk_in} {t:u_ipsl_hmic_h_top.u_pll_50_400.clkout3} -multiply_by 1
 create_generated_clock -name {axi_clk2} -source {p:pll_refclk_in} {t:u_ipsl_hmic_h_top.u_pll_50_400.clkout4} -multiply_by 2
 ###==== END "Generated Clocks"
 
